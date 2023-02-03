@@ -1,6 +1,6 @@
 # vivaldi-nc - Vivaldi Network Coordinates
 
-[![builds.sr.ht status](https://builds.sr.ht/~swaits/vivaldi-nc.svg)](https://builds.sr.ht/~swaits/vivaldi-nc?)
+[![docs.rs](https://img.shields.io/docsrs/vivaldi-nc)](https://docs.rs/vivaldi-nc/) [![builds.sr.ht status](https://builds.sr.ht/~swaits/vivaldi-nc.svg)](https://builds.sr.ht/~swaits/vivaldi-nc?) [![Crates.io](https://img.shields.io/crates/v/vivaldi-nc)](https://crates.io/crates/vivaldi-nc) ![Crates.io](https://img.shields.io/crates/d/vivaldi-nc) ![Crates.io](https://img.shields.io/crates/l/vivaldi-nc)
 
 ## Introduction
 

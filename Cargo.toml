@@ -3,10 +3,15 @@ name = "vivaldi-nc"
 version = "0.1.0"
 edition = "2021"
 authors = ["Stephen Waits <steve@waits.net>"]
-description = "An implementation of Vivaldi network coordinates."
+description = "Vivaldi network coordinates with a simple interface."
 license = "MIT"
-keywords = ["vivaldi", "network coordinates", "distributed", "p2p"]
+keywords = ["vivaldi", "network", "coordinates", "distributed", "p2p"]
 categories = ["algorithms", "network-programming"]
+documentation = "https://docs.rs/vivaldi-nc/"
+readme = "README.md"
+homepage = "https://sr.ht/~swaits/vivaldi-nc/"
+repository = "https://git.sr.ht/~swaits/vivaldi-nc"
+license-file = "LICENSE.txt"
 
 [dev-dependencies]
 assert_approx_eq = "1.1.0"

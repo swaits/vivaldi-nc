@@ -1,5 +1,7 @@
 # vivaldi-nc - Vivaldi Network Coordinates
 
+[![builds.sr.ht status](https://builds.sr.ht/~swaits/vivaldi-nc.svg)](https://builds.sr.ht/~swaits/vivaldi-nc?)
+
 ## Introduction
 
 Network Coordinates (NC) are a way to represent a node's position in a network's

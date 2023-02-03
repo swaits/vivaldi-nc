@@ -1,0 +1,16 @@
+[package]
+name = "vivaldi-nc"
+version = "0.1.0"
+edition = "2021"
+authors = ["Stephen Waits <steve@waits.net>"]
+description = "An implementation of Vivaldi network coordinates."
+license = "MIT"
+keywords = ["vivaldi", "network coordinates", "distributed", "p2p"]
+categories = ["algorithms", "network-programming"]
+
+[dev-dependencies]
+assert_approx_eq = "1.1.0"
+
+[dependencies]
+nanorand = {version = "0.7.0", features = ["wyrand", "getrandom"]}
+num-traits = "0.2.15"

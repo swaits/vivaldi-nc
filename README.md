@@ -107,6 +107,9 @@ by Serde, including text formats like [JSON](https://github.com/serde-rs/json)
 and compact binary formats like [bincode](https://crates.io/crates/bincode) and
 [MessagePack](https://github.com/3Hren/msgpack-rust).
 
+See the [module documentation](https://docs.rs/vivaldi-nc) for more detailed
+usage examples.
+
 ## Dependencies
 
 One design goal of this crate is to minimize dependencies. When dependencies

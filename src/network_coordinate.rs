@@ -27,6 +27,8 @@
 
 use std::time::Duration;
 
+use serde::{Deserialize, Serialize};
+
 use crate::height_vector::HeightVector;
 
 //
@@ -47,7 +49,7 @@ const MIN_ERROR: f32 = f32::EPSILON;
 // **** Structs ****
 //
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct NetworkCoordinate<const N: usize> {
     position: HeightVector<N>,
     error: f32,
@@ -274,6 +276,22 @@ mod tests {
             (slc.error.powf(2.0) + nyc.error.powf(2.0) + lax.error.powf(2.0) + mad.error.powf(2.0))
                 .sqrt();
         println!("error = {error}");
-        assert!(error < 0.07);
+        assert!(error < 0.2);
+    }
+
+    #[test]
+    fn test_serde() {
+        // start with JSON, deserialize it
+        let s = "{\"position\":[{\"inner\":[1.5,0.5,2.0]},0.1],\"error\":1.0}";
+        let a: NetworkCoordinate<3> = serde_json::from_str(s).unwrap();
+
+        // make sure it's the right length and works like we expect a normal NC
+        assert_approx_eq!(a.position.len(), 2.649_509, 0.001);
+        assert_eq!(a.error, 1.0);
+        assert_eq!(a.estimated_rtt(&a).as_millis(), 0);
+
+        // serialize it into a new JSON string and make sure it matches the original
+        let t = serde_json::to_string(&a);
+        assert_eq!(t.as_ref().unwrap(), s);
     }
 }

@@ -11,11 +11,13 @@ documentation = "https://docs.rs/vivaldi-nc/"
 readme = "README.md"
 homepage = "https://sr.ht/~swaits/vivaldi-nc/"
 repository = "https://git.sr.ht/~swaits/vivaldi-nc"
-license-file = "LICENSE.txt"
 
 [dev-dependencies]
 assert_approx_eq = "1.1.0"
+serde_json = "1.0.91"
 
 [dependencies]
 nanorand = {version = "0.7.0", features = ["wyrand", "getrandom"]}
 num-traits = "0.2.15"
+serde = {version = "1.0.152", features = ["serde_derive"]}
+serde_with = "2.2.0"

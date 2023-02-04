@@ -10,11 +10,11 @@ other will be close to each other. Nodes with high latency between them will be
 far from each other.
 
 This is an implementation of Vivaldi Network Coordinates, a specific NC
-algorithm, with a simple simple interface and few dependencies. Vivaldi
-coordinates are typically used in distributed networking applications, like p2p
-networks. They allow each node in the network to estimate its position in a
-latency space in a distributed way, with no central authority. This enables
-nodes to understand estimated latency to any other node in the system.
+algorithm, with a simple interface and few dependencies. Vivaldi coordinates
+are typically used in distributed networking applications, like p2p networks.
+They allow each node in the network to estimate its position in a latency space
+in a distributed way, with no central authority. This enables nodes to
+understand estimated latency to any other node in the system.
 
 According to the [Vivaldi coordinates article on Wikipedia](https://en.wikipedia.org/wiki/Vivaldi_coordinates):
 
@@ -137,7 +137,7 @@ Several crates implemented Vivaldi NC before this one. So, why another?
 
 I had several design goals which the existing crates didn't satisfy:
 
-1. Provide the simplest interface possible. I just want to have some sort of
+1. Provide the *simplest interface possible*. I just want to have some sort of
    Coordinate struct and be able to update it, and then use it to estimate
    round trip times (ie ping times).
 2. Don't require the consumer to bring their own vector or linear algebra

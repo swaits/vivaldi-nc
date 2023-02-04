@@ -4,6 +4,8 @@
 //! Vivaldi `HeightVector`.
 
 use num_traits::Float;
+use serde::{Deserialize, Serialize};
+use serde_with::serde_as;
 
 use std::ops::{Add, Div, Index, Mul, Sub};
 
@@ -16,14 +18,24 @@ use std::ops::{Add, Div, Index, Mul, Sub};
 /// ## Generic parameters:
 /// - `T`: the type to use, must satisfy the `Float` trait (i.e. `f32` or `f64`)
 /// - `N`: the number of dimensions (i.e. 2 for 2D vectors, 3 for 3D, etc)
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub(crate) struct Vector<T: Float, const N: usize>([T; N]);
+#[serde_as]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub(crate) struct Vector<T, const N: usize>
+where
+    T: Float + Serialize + for<'d> Deserialize<'d>,
+{
+    #[serde_as(as = "[_; N]")]
+    inner: [T; N],
+}
 
 //
 // **** Implementations ****
 //
 
-impl<T: Float, const N: usize> Vector<T, N> {
+impl<T, const N: usize> Vector<T, N>
+where
+    T: Float + Serialize + for<'d> Deserialize<'d>,
+{
     /// Create a new Zero vector.
     pub(crate) fn new() -> Self {
         Self::default()
@@ -32,8 +44,8 @@ impl<T: Float, const N: usize> Vector<T, N> {
     /// Compute magnitude of vector.
     pub(crate) fn len(&self) -> T {
         (0..N)
-            .map(|i| self.0[i] * self.0[i])
-            .fold(T::zero(), |acc, x| acc + x)
+            .map(|i| self.inner[i] * self.inner[i])
+            .fold(T::zero(), |sum_sq, x| sum_sq + x)
             .sqrt()
     }
 }
@@ -42,21 +54,32 @@ impl<T: Float, const N: usize> Vector<T, N> {
 // **** Trait Implementations ****
 //
 
-impl<T: Float, const N: usize> Default for Vector<T, N> {
+impl<T, const N: usize> Default for Vector<T, N>
+where
+    T: Float + Serialize + for<'d> Deserialize<'d>,
+{
     /// A default vector is all zeroes
     fn default() -> Self {
-        Self([T::zero(); N])
+        Self {
+            inner: [T::zero(); N],
+        }
     }
 }
 
-impl<T: Float, const N: usize> From<[T; N]> for Vector<T, N> {
+impl<T, const N: usize> From<[T; N]> for Vector<T, N>
+where
+    T: Float + Serialize + for<'d> Deserialize<'d>,
+{
     /// Create a new Vector from an array of type T, N dimensions.
     fn from(value: [T; N]) -> Self {
-        Self(value)
+        Self { inner: value }
     }
 }
 
-impl<T: Float, const N: usize> Add for Vector<T, N> {
+impl<T, const N: usize> Add for Vector<T, N>
+where
+    T: Float + Serialize + for<'d> Deserialize<'d>,
+{
     type Output = Self;
 
     /// Vector+Vector addition.
@@ -69,7 +92,10 @@ impl<T: Float, const N: usize> Add for Vector<T, N> {
     }
 }
 
-impl<T: Float, const N: usize> Sub for Vector<T, N> {
+impl<T, const N: usize> Sub for Vector<T, N>
+where
+    T: Float + Serialize + for<'d> Deserialize<'d>,
+{
     type Output = Self;
 
     /// Vector-Vector subtraction.
@@ -82,38 +108,47 @@ impl<T: Float, const N: usize> Sub for Vector<T, N> {
     }
 }
 
-impl<T: Float, const N: usize> Mul<T> for Vector<T, N> {
+impl<T, const N: usize> Mul<T> for Vector<T, N>
+where
+    T: Float + Serialize + for<'d> Deserialize<'d>,
+{
     type Output = Self;
 
     /// Vector*scalar multiplication.
     fn mul(self, rhs: T) -> Self::Output {
         let mut ret = Self::Output::new();
         for i in 0..N {
-            ret.0[i] = self.0[i] * rhs
+            ret.inner[i] = self.inner[i] * rhs
         }
         ret
     }
 }
 
-impl<T: Float, const N: usize> Div<T> for Vector<T, N> {
+impl<T, const N: usize> Div<T> for Vector<T, N>
+where
+    T: Float + Serialize + for<'d> Deserialize<'d>,
+{
     type Output = Self;
 
     /// Vector/scalar division.
     fn div(self, rhs: T) -> Self::Output {
         let mut ret = Self::Output::new();
         for i in 0..N {
-            ret.0[i] = self.0[i] / rhs
+            ret.inner[i] = self.inner[i] / rhs
         }
         ret
     }
 }
 
-impl<T: Float, const N: usize> Index<usize> for Vector<T, N> {
+impl<T, const N: usize> Index<usize> for Vector<T, N>
+where
+    T: Float + Serialize + for<'d> Deserialize<'d>,
+{
     type Output = T;
 
     /// Nicer indexing [] for read only references.
     fn index(&self, index: usize) -> &Self::Output {
-        &self.0[index]
+        &self.inner[index]
     }
 }
 
@@ -182,5 +217,13 @@ mod tests {
 
         let b = a * 10.0;
         assert_approx_eq!(b.len(), 37.416_57, 0.0001);
+    }
+
+    #[test]
+    fn test_serde() {
+        let a = Vector::<f32, 3>::from([1.0, 2.0, 3.0]);
+        let s = serde_json::to_string(&a);
+        assert_eq!(s.as_ref().unwrap(), "{\"inner\":[1.0,2.0,3.0]}");
+        assert!(s.is_ok());
     }
 }

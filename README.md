@@ -10,7 +10,7 @@ other will be close to each other. Nodes with high latency between them will be
 far from each other.
 
 This is an implementation of Vivaldi Network Coordinates, a specific NC
-algorithm, with a public simple interface and few dependencies. Vivaldi
+algorithm, with a simple simple interface and few dependencies. Vivaldi
 coordinates are typically used in distributed networking applications, like p2p
 networks. They allow each node in the network to estimate its position in a
 latency space in a distributed way, with no central authority. This enables
@@ -62,6 +62,51 @@ Regarding the two drawbacks mentioned by the Wikiepedia article, quoted above:
 
 ### Getting Started
 
+Add the crate to your project:
+
+```bash
+cargo add vivaldi-nc
+```
+
+Each node in the network should create a `NetworkCoordinate` (NC). The node
+uses this structure to track its latency position in the entire network.
+
+```rust
+use vivaldi_nc::network_coordinate::NetworkCoordinate;
+
+// create a 2-dimensional NetworkCoordinate to track my position
+let mut my_position = NetworkCoordinate::<2>::new();
+```
+Normally 2 or 3-dimensions is plenty. Higher dimensions may add some accuracy,
+but not enough to be worth the extra costs.
+
+Each node occasionally sends its NC to other nodes. Upon receiving a NC from a
+remote node, update your local node's position with the actual measured ping
+time to that node.
+
+```rust
+my_position.update(&remote_position, Duration::from_millis(measured_rtt));
+```
+
+Over time your NC will get more and more accurate as it's updated against more
+nodes in the network.
+
+You can estimate your ping time with any other NC you receive, even if it was
+forwarded to you indirectly.
+
+```rust
+let rtt_estimate = my_position.estimate_rtt(&remote_position);
+```
+
+That's the entire interface for creating and iteratively updating NCs.
+
+If you want to save/restore NCs, or send/receive them over a network, you'll
+want to serialize/deserialize them. `NetworkCoordinate` supports
+[Serde](https://crates.io/crates/serde) by default. Many formats are supported
+by Serde, including text formats like [JSON](https://github.com/serde-rs/json)
+and compact binary formats like [bincode](https://crates.io/crates/bincode) and
+[MessagePack](https://github.com/3Hren/msgpack-rust).
+
 ### Features
 
 ### Examples
@@ -72,13 +117,19 @@ One design goal of this crate is to minimize dependencies. When dependencies
 are required, I try to be very selective about them (re: bloat and licensing).
 This crate depends on:
 
-- `nanorand`: A fast PRNG based on WyRand. It pulls in `getrandom` as a
-  portable source of entropy. I chose this over the more commonly used, but
-  heavyweight `rand` because it's significantly smaller and does just what I
-  need, and not much more.
-- `num-traits`: A brilliant crate which makes it easier to operate on numbers
-  in generics; like using `Float` as a constraint on a generic type. Its
-  convenience outweighs its cost.
+- [`nanorand`](https://crates.io/crates/nanorand): A fast PRNG based on WyRand.
+  It pulls in `getrandom` as a portable source of entropy. I chose this over
+  the more commonly used, but heavyweight `rand` because it's significantly
+  smaller and does just what I need, and not much more.
+- [`num-traits`](https://crates.io/crates/num-traits): A brilliant crate which
+  makes it easier to operate on numbers in generics; like using `Float` as a
+  constraint on a generic type. Its convenience outweighs its cost.
+- [`serde`](https://crates.io/crates/serde): I think NCs are usually meant to
+  be shared across a network. That requires serialization/deserialization and
+  serde is *the* choice for that. It might be big, but it's efficient.
+- [`serde_with`](https://crates.io/crates/serde_with): Because the inner
+  `Vector<T,N>` uses a const generic length, we use this to help derive
+  `Deserialize`.
 
 ## Alternative implementations
 
@@ -98,12 +149,12 @@ I had several design goals which the existing crates didn't satisfy:
    rigamarole. Support `serde` traits by default.
 4. Well documented. Well tested. This varies by the crates.
 
-All of that said, those other implementations might work best for you. Here are
-the ones I know of today:
+All of that said, those other rust implementations might work best for you.
+Here are the ones I know of today:
 
-- TODO: list crates
-- TODO: list crates
-- TODO: list crates
+- [netloc](https://github.com/dgtony/netloc)
+- [violin](https://crates.io/crates/violin)
+- [vivaldi](https://crates.io/crates/vivaldi)
 
 ## Other Algorithms
 

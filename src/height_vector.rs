@@ -45,6 +45,7 @@
 use std::ops::{Add, Mul, Sub};
 
 use nanorand::{Rng, WyRand};
+use serde::{Deserialize, Serialize};
 
 use crate::vector::Vector;
 
@@ -61,7 +62,7 @@ use crate::vector::Vector;
 /// ## Generic Parameters
 ///
 /// - `N`: the dimensionality of the vector portion (i.e. non-height) of the Vivaldi height vector
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub(crate) struct HeightVector<const N: usize>(Vector<f32, N>, f32);
 
 //
@@ -159,5 +160,69 @@ mod tests {
     fn test_len() {
         let a = HeightVector::<3>::from(([1.0, 2.0, 3.0], 4.0));
         assert_approx_eq!(a.len(), 7.741_657, 0.00001);
+    }
+
+    #[test]
+    fn test_new() {
+        // new gives us a random unit length vec
+        let a = HeightVector::<3>::new();
+        assert_approx_eq!(a.len(), 1.0);
+    }
+
+    #[test]
+    fn test_default() {
+        // default() should give us a zero vec
+        let a = HeightVector::<3>::default();
+        assert_approx_eq!(a.len(), 0.0);
+    }
+
+    #[test]
+    fn test_from() {
+        let a = HeightVector::<2>::from(([1.0, 2.0], 3.0));
+        assert_eq!(a.0[0], 1.0);
+        assert_eq!(a.0[1], 2.0);
+        assert_eq!(a.1, 3.0);
+    }
+
+    #[test]
+    fn test_add() {
+        let a = HeightVector::<2>::from(([1.0, 2.0], 3.0));
+        let b = HeightVector::<2>::from(([3.0, 2.0], 1.0));
+        let c = a + b;
+        assert_eq!(c.0[0], 4.0);
+        assert_eq!(c.0[1], 4.0);
+        assert_eq!(c.1, 4.0);
+    }
+
+    #[test]
+    fn test_sub() {
+        let a = HeightVector::<2>::from(([1.0, 2.0], 3.0));
+        let b = HeightVector::<2>::from(([3.0, 2.0], 1.0));
+        let c = a - b;
+        assert_eq!(c.0[0], -2.0);
+        assert_eq!(c.0[1], 0.0);
+        assert_eq!(c.1, 4.0);
+    }
+
+    #[test]
+    fn test_mul_scalar() {
+        let a = HeightVector::<2>::from(([1.0, 2.0], 3.0)) * 10.0;
+        assert_eq!(a.0[0], 10.0);
+        assert_eq!(a.0[1], 20.0);
+        assert_eq!(a.1, 30.0);
+    }
+
+    #[test]
+    fn test_serde() {
+        // start with JSON, deserialize it
+        let s = "[{\"inner\":[1.0,2.0,3.0]},4.0]";
+        let a: HeightVector<3> = serde_json::from_str(s).unwrap();
+
+        // make sure it's the right length and works like we expect a normal NC
+        assert_approx_eq!(a.len(), 7.741_657, 0.001);
+
+        // serialize it into a new JSON string and make sure it matches the original
+        let t = serde_json::to_string(&a);
+        assert_eq!(t.as_ref().unwrap(), s);
     }
 }

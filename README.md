@@ -173,7 +173,8 @@ find many more.
 
 ## Getting Help or Contributing
 
-To get help or discuss this crate, please use
+To get help or discuss this crate, [submit a
+ticket](https://todo.sr.ht/~swaits/vivaldi-nc) or post on
 [`vivaldi-nc-discuss@`](https://lists.sr.ht/~swaits/vivaldi-nc-discuss).
 
 Discussion related to development or patch submissions should go to

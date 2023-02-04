@@ -65,7 +65,7 @@ impl<const N: usize> NetworkCoordinate<N> {
     /// # Example
     ///
     /// ```
-    /// use vivaldi_nc::network_coordinate::NetworkCoordinate;
+    /// use vivaldi_nc::NetworkCoordinate;
     ///
     /// // create a new 3-dimensional random NC
     /// let a: NetworkCoordinate<3> = NetworkCoordinate::new();
@@ -93,7 +93,7 @@ impl<const N: usize> NetworkCoordinate<N> {
     /// # Example
     ///
     /// ```
-    /// use vivaldi_nc::network_coordinate::NetworkCoordinate;
+    /// use vivaldi_nc::NetworkCoordinate;
     ///
     /// // create some 2-dimensional NCs for the sake of this example. These will just be random
     /// // NCs. In a real usecase these would have meaningful values.
@@ -125,7 +125,7 @@ impl<const N: usize> NetworkCoordinate<N> {
     ///
     /// ```
     /// use std::time::Duration;
-    /// use vivaldi_nc::network_coordinate::NetworkCoordinate;
+    /// use vivaldi_nc::NetworkCoordinate;
     ///
     /// // We always have our own NC:
     /// let mut local: NetworkCoordinate<2> = NetworkCoordinate::new();

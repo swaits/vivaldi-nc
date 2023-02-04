@@ -72,7 +72,7 @@ Each node in the network should create a `NetworkCoordinate` (NC). The node
 uses this structure to track its latency position in the entire network.
 
 ```rust
-use vivaldi_nc::network_coordinate::NetworkCoordinate;
+use vivaldi_nc::NetworkCoordinate;
 
 // create a 2-dimensional NetworkCoordinate to track my position
 let mut my_position = NetworkCoordinate::<2>::new();
@@ -107,10 +107,6 @@ by Serde, including text formats like [JSON](https://github.com/serde-rs/json)
 and compact binary formats like [bincode](https://crates.io/crates/bincode) and
 [MessagePack](https://github.com/3Hren/msgpack-rust).
 
-### Features
-
-### Examples
-
 ## Dependencies
 
 One design goal of this crate is to minimize dependencies. When dependencies
@@ -131,7 +127,7 @@ This crate depends on:
   `Vector<T,N>` uses a const generic length, we use this to help derive
   `Deserialize`.
 
-## Alternative implementations
+## Design Goals & Alternatives
 
 Several crates implemented Vivaldi NC before this one. So, why another?
 
@@ -149,6 +145,8 @@ I had several design goals which the existing crates didn't satisfy:
    rigamarole. Support `serde` traits by default.
 4. Well documented. Well tested. This varies by the crates.
 
+### Other Vivaldi NC Implementations
+
 All of that said, those other rust implementations might work best for you.
 Here are the ones I know of today:
 
@@ -156,7 +154,7 @@ Here are the ones I know of today:
 - [violin](https://crates.io/crates/violin)
 - [vivaldi](https://crates.io/crates/vivaldi)
 
-## Other Algorithms
+### Other NC Algorithms
 
 Vivaldi is about the simplest distributed NC algorithm out there. That
 simplicity combined with its reasonably good performance is a reason why it's
@@ -164,6 +162,46 @@ popular.
 
 But it's far from the only choice. Here are links to other NC algorithms:
 
-- TODO: list algorithms
-- TODO: list algorithms
-- TODO: list algorithms
+- [Pharos](https://en.wikipedia.org/wiki/Pharos_Network_Coordinates)
+- [Phoenix](https://en.wikipedia.org/wiki/Phoenix_Network_Coordinates)
+
+Search your favorite research paper index for "network coordinates" and you'll
+find many more.
+
+## Getting Help or Contributing
+
+To get help or discuss this crate, please use
+[`vivaldi-nc-discuss@`](https://lists.sr.ht/~swaits/vivaldi-nc-discuss).
+
+Discussion related to development or patch submissions should go to
+[`vivaldi-nc-devel@`](https://lists.sr.ht/~swaits/vivaldi-nc-devel).
+
+Patchsets should use [git-send-email](https://git-send-email.io/) or the [sr.ht
+UI](https://git.sr.ht/~swaits/vivaldi-nc/send-email) (easiest IMO).
+
+Patch submitters implicitly agree that all contributions they submit fall under
+the MIT license.
+
+## License
+
+> MIT License
+> 
+> Copyright (c) 2023 Stephen Waits
+> 
+> Permission is hereby granted, free of charge, to any person obtaining a copy
+> of this software and associated documentation files (the "Software"), to deal
+> in the Software without restriction, including without limitation the rights
+> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+> copies of the Software, and to permit persons to whom the Software is
+> furnished to do so, subject to the following conditions:
+> 
+> The above copyright notice and this permission notice shall be included in all
+> copies or substantial portions of the Software.
+> 
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+> SOFTWARE.

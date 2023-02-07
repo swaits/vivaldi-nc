@@ -118,7 +118,10 @@ where
     fn mul(self, rhs: T) -> Self::Output {
         let mut ret = Self::Output::new();
         for i in 0..N {
-            ret.inner[i] = self.inner[i] * rhs
+            ret.inner[i] = self.inner[i] * rhs;
+            if !ret.inner[i].is_normal() {
+                ret.inner[i] = T::zero();
+            }
         }
         ret
     }
@@ -134,7 +137,10 @@ where
     fn div(self, rhs: T) -> Self::Output {
         let mut ret = Self::Output::new();
         for i in 0..N {
-            ret.inner[i] = self.inner[i] / rhs
+            ret.inner[i] = self.inner[i] / rhs;
+            if !ret.inner[i].is_normal() {
+                ret.inner[i] = T::zero();
+            }
         }
         ret
     }
@@ -161,6 +167,54 @@ mod tests {
     use super::*;
 
     use assert_approx_eq::assert_approx_eq;
+    use num_traits::Zero;
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn proptest_new(x: f32, y: f32, z: f32){
+            let v = Vector::<f32, 3>::from([x,y,z]);
+            assert_eq!(v[0], x);
+            assert_eq!(v[1], y);
+            assert_eq!(v[2], z);
+            assert!(v[0].is_finite());
+            assert!(v[1].is_finite());
+            assert!(v[1].is_finite());
+        }
+
+        #[test]
+        fn proptest_mul(x: f32, y: f32, z: f32, m: f32) {
+            let v = Vector::<f32, 3>::from([x,y,z]);
+            let w = v * m;
+            if m.is_zero() {
+                assert_eq!(w[0], 0.0);
+                assert_eq!(w[1], 0.0);
+                assert_eq!(w[2], 0.0);
+            }
+            assert!(v[0].is_finite());
+            assert!(v[1].is_finite());
+            assert!(v[1].is_finite());
+            assert!(w[0].is_finite());
+            assert!(w[1].is_finite());
+            assert!(w[1].is_finite());
+        }
+        #[test]
+        fn proptest_div(x: f32, y: f32, z: f32, d: f32) {
+            let v = Vector::<f32, 3>::from([x,y,z]);
+            let w = v / d;
+            if d.is_zero() {
+                assert_eq!(w[0], 0.0);
+                assert_eq!(w[1], 0.0);
+                assert_eq!(w[2], 0.0);
+            }
+            assert!(v[0].is_finite());
+            assert!(v[1].is_finite());
+            assert!(v[1].is_finite());
+            assert!(w[0].is_finite());
+            assert!(w[1].is_finite());
+            assert!(w[1].is_finite());
+        }
+    }
 
     #[test]
     fn test_default_new() {

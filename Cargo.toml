@@ -1,6 +1,6 @@
 [package]
 name = "vivaldi-nc"
-version = "0.4.0"
+version = "0.4.1"
 edition = "2021"
 authors = ["Stephen Waits <steve@waits.net>"]
 description = "Vivaldi network coordinates with a simple interface."
@@ -11,6 +11,9 @@ documentation = "https://docs.rs/vivaldi-nc/"
 readme = "README.md"
 homepage = "https://sr.ht/~swaits/vivaldi-nc/"
 repository = "https://git.sr.ht/~swaits/vivaldi-nc"
+exclude = [
+	"examples/*",
+]
 
 [dev-dependencies]
 assert_approx_eq = "1.1.0"

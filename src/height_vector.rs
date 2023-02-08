@@ -70,14 +70,19 @@ pub(crate) struct HeightVector<const N: usize>(Vector<f32, N>, f32);
 //
 
 impl<const N: usize> HeightVector<N> {
-    /// A new height vector is a random unit vector plus a default height.
+    /// A new height vector is a random unit vector
     pub(crate) fn new() -> Self {
+        Self::random()
+    }
+
+    /// A new height vector is a random unit vector
+    pub(crate) fn random() -> Self {
         let mut rng = WyRand::new();
         let mut vec = [0.0; N];
         for i in vec.iter_mut().take(N) {
             *i = rng.generate::<f32>();
         }
-        let height = rng.generate::<f32>();
+        let height = rng.generate::<f32>().abs();
         Self(Vector::<f32, N>::from(vec), height).normalized()
     }
 
@@ -99,6 +104,22 @@ impl<const N: usize> HeightVector<N> {
             Self(self.0 / len, self.1 / len)
         }
     }
+
+    /// Checks whether the `HeightVector` is valid.
+    ///
+    /// In this case, valid means the height is positive, and none of the components are NaN or
+    /// Inf.
+    pub(crate) fn is_valid(&self) -> bool {
+        !self.is_invalid()
+    }
+
+    /// Checks whether the `HeightVector` is invalid.
+    ///
+    /// In this case, valid means the height is positive, and none of the components are NaN or
+    /// Inf.
+    pub(crate) fn is_invalid(&self) -> bool {
+        self.1.is_sign_negative() || self.1.is_nan() || self.1.is_infinite() || self.0.is_invalid()
+    }
 }
 
 //
@@ -115,7 +136,12 @@ impl<const N: usize> Default for HeightVector<N> {
 impl<const N: usize> From<([f32; N], f32)> for HeightVector<N> {
     /// Convert from a `([f32; N], f32)` (vector, height) to a Vivaldi height vector type.
     fn from(value: ([f32; N], f32)) -> Self {
-        Self(Vector::<f32, N>::from(value.0), value.1)
+        let ret = Self(Vector::<f32, N>::from(value.0), value.1);
+        if ret.is_valid() {
+            ret
+        } else {
+            Self::random()
+        }
     }
 }
 
@@ -124,7 +150,12 @@ impl<const N: usize> Add for HeightVector<N> {
 
     /// Add two Vivaldi height vectors.
     fn add(self, rhs: Self) -> Self::Output {
-        Self(self.0 + rhs.0, self.1 + rhs.1)
+        let ret = Self(self.0 + rhs.0, self.1 + rhs.1);
+        if ret.is_valid() {
+            ret
+        } else {
+            Self::random()
+        }
     }
 }
 
@@ -134,7 +165,12 @@ impl<const N: usize> Sub for HeightVector<N> {
     /// Subtract two Vivaldi height vectors. Note that this is the difference in the vectors
     /// and the summation of the heights, as defined by Vivaldi's author.
     fn sub(self, rhs: Self) -> Self::Output {
-        Self(self.0 - rhs.0, self.1 + rhs.1)
+        let ret = Self(self.0 - rhs.0, self.1 + rhs.1);
+        if ret.is_valid() {
+            ret
+        } else {
+            Self::random()
+        }
     }
 }
 
@@ -143,7 +179,12 @@ impl<const N: usize> Mul<f32> for HeightVector<N> {
 
     /// Multiply a Vivaldi height vector by a scalar. Works the same as normal vector scaling.
     fn mul(self, rhs: f32) -> Self::Output {
-        Self(self.0 * rhs, self.1 * rhs)
+        let ret = Self(self.0 * rhs, self.1 * rhs);
+        if ret.is_valid() {
+            ret
+        } else {
+            Self::random()
+        }
     }
 }
 

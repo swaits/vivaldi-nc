@@ -1,4 +1,5 @@
-//! Vivaldi Network Coordinates with a simple interface
+//! Vivaldi network coordinates for fast, distributed latency estimates in multinode networks, with
+//! a clean and simple interface.
 //!
 //! Network Coordinates (NC) are a way to represent a node's position in a network's
 //! latency space. Nodes with low latency (ping or round trip time) between each
@@ -19,7 +20,8 @@
 //!
 //! # Usage
 //!
-//! This crate exports a single struct, [`NetworkCoordinate`]. Typical use of Vivaldi NCs for a
+//! This crate exports a single struct, [`NetworkCoordinate`] and two type aliases
+//! ([`NetworkCoordinate2D`] and [`NetworkCoordinate3D`]). Typical use of Vivaldi NCs for a
 //! distributed network works like this:
 //!
 //! 1. Each node in the network has its own instance of [`NetworkCoordinate`]. *See "Note on
@@ -97,17 +99,5 @@ mod vector;
 // publish our interface
 pub mod network_coordinate;
 pub use network_coordinate::NetworkCoordinate;
-
-// type aliases for convenience
-
-/// A 2D [`NetworkCoordinate`]. Includes a 2D Euclidean position and a height.
-///
-/// This type alias is just for convenience. It's functionally equivalent to
-/// `NetworkCoordinate<2>`.
-pub type NetworkCoordinate2D = NetworkCoordinate<2>;
-
-/// A 3D [`NetworkCoordinate`]. Includes a 3D Euclidean position and a height.
-///
-/// This type alias is just for convenience. It's functionally equivalent to
-/// `NetworkCoordinate<3>`.
-pub type NetworkCoordinate3D = NetworkCoordinate<3>;
+pub use network_coordinate::NetworkCoordinate2D;
+pub use network_coordinate::NetworkCoordinate3D;

@@ -110,6 +110,33 @@ and compact binary formats like [bincode](https://crates.io/crates/bincode) and
 See the [module documentation](https://docs.rs/vivaldi-nc) for more detailed
 usage examples.
 
+### Examples
+
+Run an example which loads a n-to-n latency sample from PlanetLab and iterates
+on `NetworkCoordinate`s until some low-enough mean error is reached. The output is a JSON array of elements that look like this:
+
+```json
+  {
+    "position": [
+      {
+        "inner": [     # Euclidean position (3D in this case):
+          9.249476,      # first dimension; "x"
+          23.747225,     # second dimension; "x"
+          -6.473008      # third dimension; "x"
+        ]
+      },
+      72.10599         # Height component (estimate of stem latency in milliseconds)
+    ],
+    "error": 2.9166403 # Estimated error (lower is better)
+  },
+
+```
+To run the example:
+
+```bash
+cargo run --example planetlab
+```
+
 ## Dependencies
 
 One design goal of this crate is to minimize dependencies. When dependencies

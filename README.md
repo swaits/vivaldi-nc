@@ -112,8 +112,9 @@ usage examples.
 
 ### Examples
 
-Run an example which loads a n-to-n latency sample from PlanetLab and iterates
-on `NetworkCoordinate`s until some low-enough mean error is reached. The output is a JSON array of elements that look like this:
+The repository includes an example which loads a n-to-n latency sample from
+PlanetLab and iterates on `NetworkCoordinate`s until some low-enough mean error
+is reached. The output is a JSON array of elements that look like this:
 
 ```json
   {
@@ -131,9 +132,16 @@ on `NetworkCoordinate`s until some low-enough mean error is reached. The output 
   },
 
 ```
-To run the example:
+To run the example, first clone the repository locally:
 
 ```bash
+git clone https://git.sr.ht/~swaits/vivaldi-nc
+```
+
+Then `cd` into the local clone and run the example:
+
+```bash
+cd vivaldi-nc
 cargo run --example planetlab
 ```
 

@@ -258,8 +258,8 @@ mod tests {
 
         // verify the initial error
         let error =
-            (slc.error.powf(2.0) + nyc.error.powf(2.0) + lax.error.powf(2.0) + mad.error.powf(2.0))
-                .sqrt();
+        (slc.error.powf(2.0) + nyc.error.powf(2.0) + lax.error.powf(2.0) + mad.error.powf(2.0))
+            .sqrt();
         assert_eq!(error, 400.0);
 
         // iterate plenty of times to converge and minimize error
@@ -303,5 +303,17 @@ mod tests {
         // serialize it into a new JSON string and make sure it matches the original
         let t = serde_json::to_string(&a);
         assert_eq!(t.as_ref().unwrap(), s);
+    }
+
+    #[test]
+    fn test_estimated_rtt() {
+        // start with JSON, deserialize it
+        let s = "{\"position\":[{\"inner\":[1.5,0.5,2.0]},25.0],\"error\":1.0}";
+        let a: NetworkCoordinate<3> = serde_json::from_str(s).unwrap();
+        let s = "{\"position\":[{\"inner\":[-1.5,-0.5,-2.0]},50.0],\"error\":1.0}";
+        let b: NetworkCoordinate<3> = serde_json::from_str(s).unwrap();
+
+        let estimate = a.estimated_rtt(&b);
+        assert_approx_eq!(estimate.as_secs_f32(), 0.080_099);
     }
 }

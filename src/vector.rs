@@ -24,6 +24,7 @@ pub(crate) struct Vector<T, const N: usize>
 where
     T: Float + Serialize + for<'d> Deserialize<'d>,
 {
+    #[serde(rename = "position")]
     #[serde_as(as = "[_; N]")]
     inner: [T; N],
 }
@@ -279,7 +280,7 @@ mod tests {
     fn test_serde() {
         let a = Vector::<f32, 3>::from([1.0, 2.0, 3.0]);
         let s = serde_json::to_string(&a);
-        assert_eq!(s.as_ref().unwrap(), "{\"inner\":[1.0,2.0,3.0]}");
+        assert_eq!(s.as_ref().unwrap(), "{\"position\":[1.0,2.0,3.0]}");
         assert!(s.is_ok());
     }
 }

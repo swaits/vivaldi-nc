@@ -51,7 +51,8 @@ const MIN_ERROR: f32 = f32::EPSILON;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NetworkCoordinate<const N: usize> {
-    position: HeightVector<N>,
+    #[serde(flatten)]
+    heightvec: HeightVector<N>,
     error: f32,
 }
 
@@ -106,7 +107,7 @@ impl<const N: usize> NetworkCoordinate<N> {
     ///
     pub fn estimated_rtt(&self, rhs: &Self) -> Duration {
         // estimated rss is euclidean distance between the two plus the sum of the heights
-        Duration::from_secs_f32((self.position - rhs.position).len() / 1000.0)
+        Duration::from_secs_f32((self.heightvec - rhs.heightvec).len() / 1000.0)
     }
 
     /// Given another Vivaldi [`NetworkCoordinate`], adjust our coordinateto better represent the actual round
@@ -166,11 +167,12 @@ impl<const N: usize> NetworkCoordinate<N> {
         // δ = cc × w
         let delta = C_DELTA * w;
         // xi = xi + δ × (rtt − ‖xi − xj ‖) × u(xi − xj)
-        self.position = self.position + (self.position - rhs.position).normalized() * delta * error;
+        self.heightvec =
+            self.heightvec + (self.heightvec - rhs.heightvec).normalized() * delta * error;
 
         // if we ended up with an invalid coordinate, return a new random coordinate with default
         // error
-        if self.position.is_invalid() {
+        if self.heightvec.is_invalid() {
             *self = Self::new()
         }
 
@@ -193,7 +195,7 @@ impl<const N: usize> Default for NetworkCoordinate<N> {
     /// A default `NetworkCoordinate` has a random position and DEFAULT_ERROR
     fn default() -> Self {
         Self {
-            position: HeightVector::<N>::random(),
+            heightvec: HeightVector::<N>::random(),
             error: DEFAULT_ERROR,
         }
     }
@@ -258,8 +260,8 @@ mod tests {
 
         // verify the initial error
         let error =
-        (slc.error.powf(2.0) + nyc.error.powf(2.0) + lax.error.powf(2.0) + mad.error.powf(2.0))
-            .sqrt();
+            (slc.error.powf(2.0) + nyc.error.powf(2.0) + lax.error.powf(2.0) + mad.error.powf(2.0))
+                .sqrt();
         assert_eq!(error, 400.0);
 
         // iterate plenty of times to converge and minimize error
@@ -292,11 +294,11 @@ mod tests {
     #[test]
     fn test_serde() {
         // start with JSON, deserialize it
-        let s = "{\"position\":[{\"inner\":[1.5,0.5,2.0]},0.1],\"error\":1.0}";
+        let s = "{\"position\":[1.5,0.5,2.0],\"height\":0.1,\"error\":1.0}";
         let a: NetworkCoordinate<3> = serde_json::from_str(s).unwrap();
 
         // make sure it's the right length and works like we expect a normal NC
-        assert_approx_eq!(a.position.len(), 2.649_509, 0.001);
+        assert_approx_eq!(a.heightvec.len(), 2.649_509, 0.001);
         assert_eq!(a.error, 1.0);
         assert_eq!(a.estimated_rtt(&a).as_millis(), 0);
 
@@ -308,9 +310,9 @@ mod tests {
     #[test]
     fn test_estimated_rtt() {
         // start with JSON, deserialize it
-        let s = "{\"position\":[{\"inner\":[1.5,0.5,2.0]},25.0],\"error\":1.0}";
+        let s = "{\"position\":[1.5,0.5,2.0],\"height\":25.0,\"error\":1.0}";
         let a: NetworkCoordinate<3> = serde_json::from_str(s).unwrap();
-        let s = "{\"position\":[{\"inner\":[-1.5,-0.5,-2.0]},50.0],\"error\":1.0}";
+        let s = "{\"position\":[-1.5,-0.5,-2.0],\"height\":50.0,\"error\":1.0}";
         let b: NetworkCoordinate<3> = serde_json::from_str(s).unwrap();
 
         let estimate = a.estimated_rtt(&b);

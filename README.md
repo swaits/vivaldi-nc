@@ -114,24 +114,36 @@ usage examples.
 
 The repository includes an example which loads a n-to-n latency sample from
 PlanetLab and iterates on `NetworkCoordinate`s until some low-enough mean error
-is reached. The output is a JSON array of elements that look like this:
+is reached. The output is a JSON array of elements which contain the NC's
+position, its height (or stem latency estimate), and its estimation of error
+(lower is better) that look like this:
 
 ```json
-  {
-    "position": [
-      {
-        "inner": [     # Euclidean position (3D in this case):
-          9.249476,      # first dimension; "x"
-          23.747225,     # second dimension; "x"
-          -6.473008      # third dimension; "x"
-        ]
-      },
-      72.10599         # Height component (estimate of stem latency in milliseconds)
-    ],
-    "error": 2.9166403 # Estimated error (lower is better)
-  },
-
+{
+  "position": [
+    5.563593,
+    -2.332495,
+    7.3957834
+  ],
+  "height": 55.56651,
+  "error": 3.241348
+}
 ```
+Adding some detail to these three fields:
+
+- `position`: Estimated position of this node (or `NetworkCoordinate`) on the
+  network core. Think of this like the node's endpoint into the Internet
+  backbone. This is a cartesian coordinate in a multi-dimensional latency space
+  (in this case 3D), measured in milliseconds.
+- `height`: Estimated stem time, which is the time from the node itself to the
+  backbone. So, for example this might represent the latency between your
+  node's actual location, like your home, and the point at which it gets into
+  the highest-speed, core part of the Internet. Height helps adjust for
+  [triangle inequality violations](https://en.wikipedia.org/wiki/Triangle_inequality),
+  which are common on the Internet.
+- `error`: Estimated error of the current `position`, and `height`. Lower is
+  better.
+
 To run the example, first clone the repository locally:
 
 ```bash

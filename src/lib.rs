@@ -51,7 +51,7 @@
 //!
 //! // mock up a remote NC for the sake of this example (normally the node would actually receive
 //! // this from a remote node)
-//! let received_msg = "{\"position\":[{\"inner\":[1.5,0.5,2.0]},0.1],\"error\":1.0}";
+//! let received_msg = "{\"position\":[1.5,0.5,2.0],\"height\":0.1,\"error\":1.0}";
 //! let remote_nc: NetworkCoordinate<3> = serde_json::from_str(received_msg).unwrap();
 //!
 //! // mock up a measured RTT between us and that node (normally the nodes would coordinate
@@ -77,7 +77,7 @@
 //!
 //! // mock up a remote NC for the sake of this example (normally the node would actually receive
 //! // this from a remote node)
-//! let received_msg = "{\"position\":[{\"inner\":[1.5,0.5,2.0]},0.1],\"error\":1.0}";
+//! let received_msg = "{\"position\":[1.5,0.5,2.0],\"height\":0.1,\"error\":1.0}";
 //! let remote_nc: NetworkCoordinate<3> = serde_json::from_str(received_msg).unwrap();
 //!
 //! // estimate the RTT to this remote node without measuring it directly

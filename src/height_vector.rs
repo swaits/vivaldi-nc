@@ -63,7 +63,11 @@ use crate::vector::Vector;
 ///
 /// - `N`: the dimensionality of the vector portion (i.e. non-height) of the Vivaldi height vector
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
-pub(crate) struct HeightVector<const N: usize>(Vector<f32, N>, f32);
+pub(crate) struct HeightVector<const N: usize> {
+    #[serde(flatten)]
+    position: Vector<f32, N>,
+    height: f32,
+}
 
 //
 // **** Implementations ****
@@ -83,13 +87,17 @@ impl<const N: usize> HeightVector<N> {
             *i = rng.generate::<f32>();
         }
         let height = rng.generate::<f32>().abs();
-        Self(Vector::<f32, N>::from(vec), height).normalized()
+        Self {
+            position: Vector::<f32, N>::from(vec),
+            height,
+        }
+        .normalized()
     }
 
     /// The magnitude of a Vivaldi height vector is defined as the magnitude of the vector plus the
     /// height value.
     pub(crate) fn len(&self) -> f32 {
-        self.0.len() + self.1
+        self.position.len() + self.height
     }
 
     /// A normalized Vivaldi height vector is just like a normalized vector: the vector scaled
@@ -101,7 +109,10 @@ impl<const N: usize> HeightVector<N> {
             Self::new()
         } else {
             // otherwise scale it by the inverse of its magnitude like any normal vector
-            Self(self.0 / len, self.1 / len)
+            Self {
+                position: self.position / len,
+                height: self.height / len,
+            }
         }
     }
 
@@ -118,7 +129,10 @@ impl<const N: usize> HeightVector<N> {
     /// In this case, valid means the height is positive, and none of the components are NaN or
     /// Inf.
     pub(crate) fn is_invalid(&self) -> bool {
-        self.0.is_invalid() || self.1.is_nan() || self.1.is_infinite() || self.1 < 0.0
+        self.position.is_invalid()
+            || self.height.is_nan()
+            || self.height.is_infinite()
+            || self.height < 0.0
     }
 }
 
@@ -129,14 +143,20 @@ impl<const N: usize> HeightVector<N> {
 impl<const N: usize> Default for HeightVector<N> {
     /// Default value for a Vivaldi height vector is just the defaults of its children types.
     fn default() -> Self {
-        Self(Default::default(), Default::default())
+        Self {
+            position: Default::default(),
+            height: Default::default(),
+        }
     }
 }
 
 impl<const N: usize> From<([f32; N], f32)> for HeightVector<N> {
     /// Convert from a `([f32; N], f32)` (vector, height) to a Vivaldi height vector type.
     fn from(value: ([f32; N], f32)) -> Self {
-        let ret = Self(Vector::<f32, N>::from(value.0), value.1);
+        let ret = Self {
+            position: Vector::<f32, N>::from(value.0),
+            height: value.1,
+        };
         if ret.is_valid() {
             ret
         } else {
@@ -150,7 +170,10 @@ impl<const N: usize> Add for HeightVector<N> {
 
     /// Add two Vivaldi height vectors.
     fn add(self, rhs: Self) -> Self::Output {
-        let ret = Self(self.0 + rhs.0, self.1 + rhs.1);
+        let ret = Self {
+            position: self.position + rhs.position,
+            height: self.height + rhs.height,
+        };
         if ret.is_valid() {
             ret
         } else {
@@ -165,7 +188,10 @@ impl<const N: usize> Sub for HeightVector<N> {
     /// Subtract two Vivaldi height vectors. Note that this is the difference in the vectors
     /// and the summation of the heights, as defined by Vivaldi's author.
     fn sub(self, rhs: Self) -> Self::Output {
-        let ret = Self(self.0 - rhs.0, self.1 + rhs.1);
+        let ret = Self {
+            position: self.position - rhs.position,
+            height: self.height + rhs.height,
+        };
         if ret.is_valid() {
             ret
         } else {
@@ -179,7 +205,10 @@ impl<const N: usize> Mul<f32> for HeightVector<N> {
 
     /// Multiply a Vivaldi height vector by a scalar. Works the same as normal vector scaling.
     fn mul(self, rhs: f32) -> Self::Output {
-        let ret = Self(self.0 * rhs, self.1 * rhs);
+        let ret = Self {
+            position: self.position * rhs,
+            height: self.height * rhs,
+        };
         if ret.is_valid() {
             ret
         } else {
@@ -220,9 +249,9 @@ mod tests {
             let a = HeightVector::<2>::from(([fx0 ,fy0 ],fh0 ));
             let b = HeightVector::<2>::from(([fx1 ,fy1 ],fh1 ));
             let c = a+b;
-            assert_eq!(c.0[0], fx0 + fx1);
-            assert_eq!(c.0[1], fy0 + fy1);
-            assert_eq!(c.1, fh0 + fh1);
+            assert_eq!(c.position[0], fx0 + fx1);
+            assert_eq!(c.position[1], fy0 + fy1);
+            assert_eq!(c.height, fh0 + fh1);
         }
 
         #[test]
@@ -234,9 +263,9 @@ mod tests {
             let a = HeightVector::<2>::from(([fx0 ,fy0 ],fh0 ));
             let b = HeightVector::<2>::from(([fx1 ,fy1 ],fh1 ));
             let c = a-b;
-            assert_eq!(c.0[0], fx0 - fx1);
-            assert_eq!(c.0[1], fy0 - fy1);
-            assert_eq!(c.1, fh0 + fh1);
+            assert_eq!(c.position[0], fx0 - fx1);
+            assert_eq!(c.position[1], fy0 - fy1);
+            assert_eq!(c.height, fh0 + fh1);
         }
 
         #[test]
@@ -249,9 +278,9 @@ mod tests {
             if fm < 0.0 {
                 assert_approx_eq!(b.len(), 1.0)
             } else {
-                assert_eq!(b.0[0], fx * fm);
-                assert_eq!(b.0[1], fy * fm);
-                assert_eq!(b.1, fh * fm);
+                assert_eq!(b.position[0], fx * fm);
+                assert_eq!(b.position[1], fy * fm);
+                assert_eq!(b.height, fh * fm);
             }
         }
     }
@@ -279,9 +308,9 @@ mod tests {
     #[test]
     fn test_from() {
         let a = HeightVector::<2>::from(([1.0, 2.0], 3.0));
-        assert_eq!(a.0[0], 1.0);
-        assert_eq!(a.0[1], 2.0);
-        assert_eq!(a.1, 3.0);
+        assert_eq!(a.position[0], 1.0);
+        assert_eq!(a.position[1], 2.0);
+        assert_eq!(a.height, 3.0);
     }
 
     #[test]
@@ -289,9 +318,9 @@ mod tests {
         let a = HeightVector::<2>::from(([1.0, 2.0], 3.0));
         let b = HeightVector::<2>::from(([3.0, 2.0], 1.0));
         let c = a + b;
-        assert_eq!(c.0[0], 4.0);
-        assert_eq!(c.0[1], 4.0);
-        assert_eq!(c.1, 4.0);
+        assert_eq!(c.position[0], 4.0);
+        assert_eq!(c.position[1], 4.0);
+        assert_eq!(c.height, 4.0);
     }
 
     #[test]
@@ -299,23 +328,23 @@ mod tests {
         let a = HeightVector::<2>::from(([1.0, 2.0], 3.0));
         let b = HeightVector::<2>::from(([3.0, 2.0], 1.0));
         let c = a - b;
-        assert_eq!(c.0[0], -2.0);
-        assert_eq!(c.0[1], 0.0);
-        assert_eq!(c.1, 4.0);
+        assert_eq!(c.position[0], -2.0);
+        assert_eq!(c.position[1], 0.0);
+        assert_eq!(c.height, 4.0);
     }
 
     #[test]
     fn test_mul_scalar() {
         let a = HeightVector::<2>::from(([1.0, 2.0], 3.0)) * 10.0;
-        assert_eq!(a.0[0], 10.0);
-        assert_eq!(a.0[1], 20.0);
-        assert_eq!(a.1, 30.0);
+        assert_eq!(a.position[0], 10.0);
+        assert_eq!(a.position[1], 20.0);
+        assert_eq!(a.height, 30.0);
     }
 
     #[test]
     fn test_serde() {
         // start with JSON, deserialize it
-        let s = "[{\"inner\":[1.0,2.0,3.0]},4.0]";
+        let s = "{\"position\":[1.0,2.0,3.0],\"height\":4.0}";
         let a: HeightVector<3> = serde_json::from_str(s).unwrap();
 
         // make sure it's the right length and works like we expect a normal NC

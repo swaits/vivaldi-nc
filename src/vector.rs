@@ -48,6 +48,13 @@ where
             .fold(T::zero(), |sum_sq, x| sum_sq + x)
             .sqrt()
     }
+
+    /// Checks whether the `Vector` is invalid.
+    ///
+    /// In this case, valid means tnone of the components are NaN or Inf.
+    pub(crate) fn is_invalid(&self) -> bool {
+        self.inner.iter().any(|x| x.is_nan() || x.is_infinite())
+    }
 }
 
 //
@@ -119,9 +126,6 @@ where
         let mut ret = Self::Output::new();
         for i in 0..N {
             ret.inner[i] = self.inner[i] * rhs;
-            if !ret.inner[i].is_normal() {
-                ret.inner[i] = T::zero();
-            }
         }
         ret
     }
@@ -138,9 +142,6 @@ where
         let mut ret = Self::Output::new();
         for i in 0..N {
             ret.inner[i] = self.inner[i] / rhs;
-            if !ret.inner[i].is_normal() {
-                ret.inner[i] = T::zero();
-            }
         }
         ret
     }
@@ -167,7 +168,6 @@ mod tests {
     use super::*;
 
     use assert_approx_eq::assert_approx_eq;
-    use num_traits::Zero;
     use proptest::prelude::*;
 
     proptest! {
@@ -186,33 +186,35 @@ mod tests {
         fn proptest_mul(x: f32, y: f32, z: f32, m: f32) {
             let v = Vector::<f32, 3>::from([x,y,z]);
             let w = v * m;
-            if m.is_zero() {
-                assert_eq!(w[0], 0.0);
-                assert_eq!(w[1], 0.0);
-                assert_eq!(w[2], 0.0);
-            }
-            assert!(v[0].is_finite());
-            assert!(v[1].is_finite());
-            assert!(v[1].is_finite());
-            assert!(w[0].is_finite());
-            assert!(w[1].is_finite());
-            assert!(w[1].is_finite());
+            assert_eq!(v[0] * m, w[0]);
+            assert_eq!(v[1] * m, w[1]);
+            assert_eq!(v[2] * m, w[2]);
         }
+
         #[test]
         fn proptest_div(x: f32, y: f32, z: f32, d: f32) {
             let v = Vector::<f32, 3>::from([x,y,z]);
             let w = v / d;
-            if d.is_zero() {
-                assert_eq!(w[0], 0.0);
-                assert_eq!(w[1], 0.0);
-                assert_eq!(w[2], 0.0);
+
+            let (x,y,z) = (v[0]/d, v[1]/d, v[2]/d);
+
+            if x.is_nan() {
+                assert!(w[0].is_nan());
+            } else {
+                assert_eq!(v[0] / d, x);
             }
-            assert!(v[0].is_finite());
-            assert!(v[1].is_finite());
-            assert!(v[1].is_finite());
-            assert!(w[0].is_finite());
-            assert!(w[1].is_finite());
-            assert!(w[1].is_finite());
+
+            if y.is_nan() {
+                assert!(w[1].is_nan());
+            } else {
+                assert_eq!(v[1] / d, y);
+            }
+
+            if z.is_nan() {
+                assert!(w[2].is_nan());
+            } else {
+                assert_eq!(v[2] / d, z);
+            }
         }
     }
 

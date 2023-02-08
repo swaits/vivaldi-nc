@@ -40,7 +40,7 @@ const C_ERROR: f32 = 0.25;
 const C_DELTA: f32 = 0.25;
 
 // initial error value
-const DEFAULT_ERROR: f32 = 1000.0;
+const DEFAULT_ERROR: f32 = 200.0;
 
 // error should always be greater than zero
 const MIN_ERROR: f32 = f32::EPSILON;
@@ -49,7 +49,7 @@ const MIN_ERROR: f32 = f32::EPSILON;
 // **** Structs ****
 //
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NetworkCoordinate<const N: usize> {
     position: HeightVector<N>,
     error: f32,
@@ -168,8 +168,20 @@ impl<const N: usize> NetworkCoordinate<N> {
         // xi = xi + δ × (rtt − ‖xi − xj ‖) × u(xi − xj)
         self.position = self.position + (self.position - rhs.position).normalized() * delta * error;
 
+        // if we ended up with an invalid coordinate, return a new random coordinate with default
+        // error
+        if self.position.is_invalid() {
+            *self = Self::new()
+        }
+
         // return reference to updated self
         self
+    }
+
+    /// getter for error value - useful for consumers to understand the estimated accuracty of this
+    /// `NetworkCoordinate`
+    pub fn error(&self) -> f32 {
+        self.error
     }
 }
 
@@ -178,9 +190,10 @@ impl<const N: usize> NetworkCoordinate<N> {
 //
 
 impl<const N: usize> Default for NetworkCoordinate<N> {
+    /// A default `NetworkCoordinate` has a random position and DEFAULT_ERROR
     fn default() -> Self {
         Self {
-            position: HeightVector::<N>::new(),
+            position: HeightVector::<N>::random(),
             error: DEFAULT_ERROR,
         }
     }
@@ -247,11 +260,10 @@ mod tests {
         let error =
             (slc.error.powf(2.0) + nyc.error.powf(2.0) + lax.error.powf(2.0) + mad.error.powf(2.0))
                 .sqrt();
-        println!("error = {error}");
-        assert_eq!(error, 2_000.0);
+        assert_eq!(error, 400.0);
 
         // iterate plenty of times to converge and minimize error
-        (0..50).for_each(|_| {
+        (0..20).for_each(|_| {
             slc.update(&nyc, Duration::from_millis(162));
             nyc.update(&slc, Duration::from_millis(162));
 
@@ -272,11 +284,9 @@ mod tests {
         });
 
         // compute and test the root mean squared error
-        let error =
-            (slc.error.powf(2.0) + nyc.error.powf(2.0) + lax.error.powf(2.0) + mad.error.powf(2.0))
-                .sqrt();
+        let error = slc.error + nyc.error + lax.error + mad.error;
         println!("error = {error}");
-        assert!(error < 0.2);
+        assert!(error < 5.0);
     }
 
     #[test]

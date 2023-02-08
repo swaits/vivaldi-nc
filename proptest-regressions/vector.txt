@@ -7,3 +7,4 @@
 cc 9746321b74151b1897633df1bb1acba31bd29b780939385d9bece281322379fb # shrinks to x = 0.0, y = 0.0, z = 0.0
 cc 92f14e65f9256a1213cabcecf6f45152c96f39193a1bdedb7a5cdfcaf74b8550 # shrinks to x = 1.345588e30, y = 0.0, z = 0.0, m = 8.635428e-39
 cc 6bd8ea879a7c332aea9f429cf4d6d9bd61c96661edfe8875c733aea750e0c5d8 # shrinks to x = 0.0, y = 0.0, z = 9.319843e-7, d = 0.0
+cc 0c5776cf71a7170fda31bd586efd8d07d8fba2c24431a58f5b722bd9a7f5621a # shrinks to x = 0.0, y = 0.0, z = 0.0, d = -0.0

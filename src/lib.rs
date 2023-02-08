@@ -69,16 +69,19 @@
 //! forwarded to us by someone else. And in this case, we aren't measuring the actual RTT. Instead,
 //! we're using the NCs to estimate RTT.
 //!
+//! This example also uses the type alias [`NetworkCoordinate3D`] instead of its equivalent
+//! [`NetworkCoordinate<3>`].
+//!
 //! ```
-//! use vivaldi_nc::NetworkCoordinate;
+//! use vivaldi_nc::NetworkCoordinate3D;
 //!
 //! // create our local NC as a 3-dimensional Vivaldi coordinate
-//! let mut my_nc = NetworkCoordinate::<3>::new();
+//! let mut my_nc = NetworkCoordinate3D::new();
 //!
 //! // mock up a remote NC for the sake of this example (normally the node would actually receive
 //! // this from a remote node)
 //! let received_msg = "{\"position\":[1.5,0.5,2.0],\"height\":0.1,\"error\":1.0}";
-//! let remote_nc: NetworkCoordinate<3> = serde_json::from_str(received_msg).unwrap();
+//! let remote_nc: NetworkCoordinate3D = serde_json::from_str(received_msg).unwrap();
 //!
 //! // estimate the RTT to this remote node without measuring it directly
 //! let rtt_estimated = my_nc.estimated_rtt(&remote_nc);
@@ -94,3 +97,17 @@ mod vector;
 // publish our interface
 pub mod network_coordinate;
 pub use network_coordinate::NetworkCoordinate;
+
+// type aliases for convenience
+
+/// A 2D [`NetworkCoordinate`]. Includes a 2D Euclidean position and a height.
+///
+/// This type alias is just for convenience. It's functionally equivalent to
+/// `NetworkCoordinate<2>`.
+pub type NetworkCoordinate2D = NetworkCoordinate<2>;
+
+/// A 3D [`NetworkCoordinate`]. Includes a 3D Euclidean position and a height.
+///
+/// This type alias is just for convenience. It's functionally equivalent to
+/// `NetworkCoordinate<3>`.
+pub type NetworkCoordinate3D = NetworkCoordinate<3>;

@@ -24,7 +24,9 @@ fn load_planetlab_file(filename: &str) -> Vec<Vec<Duration>> {
         .map(|line| {
             // ...
             line.split_whitespace()
-                .map(|token| Duration::from_secs_f32(token.parse::<f32>().expect("parse error") / 1000.0))
+                .map(|token| {
+                    Duration::from_secs_f32(token.parse::<f32>().expect("parse error") / 1000.0)
+                })
                 .collect()
         })
         .collect()

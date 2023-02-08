@@ -118,7 +118,7 @@ impl<const N: usize> HeightVector<N> {
     /// In this case, valid means the height is positive, and none of the components are NaN or
     /// Inf.
     pub(crate) fn is_invalid(&self) -> bool {
-        self.1.is_sign_negative() || self.1.is_nan() || self.1.is_infinite() || self.0.is_invalid()
+        self.0.is_invalid() || self.1.is_nan() || self.1.is_infinite() || self.1 < 0.0
     }
 }
 
@@ -193,9 +193,68 @@ impl<const N: usize> Mul<f32> for HeightVector<N> {
 //
 #[cfg(test)]
 mod tests {
-    use assert_approx_eq::assert_approx_eq;
-
     use super::*;
+    use assert_approx_eq::assert_approx_eq;
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn proptest_len(x: f32, y: f32, h: f32) {
+            let len = ((x*x) + (y*y)).sqrt() + h.abs();
+            let a = HeightVector::<2>::from(([x,y],h));
+            if x.is_nan() || x.is_infinite() || y.is_nan() || y.is_infinite() || h.is_nan() || h.is_infinite() || h < 0.0 {
+                // we should've gottne a random univ vector here
+                assert_approx_eq!(a.len(), 1.0);
+            } else {
+                // `HeightVector` we created from proptest values should be valid and have a length
+                assert_eq!(a.len(), len);
+            }
+        }
+
+        #[test]
+        fn proptest_add(x0 in -1_000_000_000..1_000_000_000i32, y0 in -1_000_000_000..1_000_000_000i32, h0 in 0..1_000_000_000i32, x1 in -1_000_000_000..1_000_000_000i32, y1 in -1_000_000_000..1_000_000_000i32, h1 in 0..1_000_000i32) {
+            // convert our integer range inputs to f32s
+            let (fx0,fy0,fh0) = (x0 as f32 / 1_000.0, y0 as f32 / 1_000.0, h0 as f32 / 1_000.0);
+            let (fx1,fy1,fh1) = (x1 as f32 / 1_000.0, y1 as f32 / 1_000.0, h1 as f32 / 1_000.0);
+
+            let a = HeightVector::<2>::from(([fx0 ,fy0 ],fh0 ));
+            let b = HeightVector::<2>::from(([fx1 ,fy1 ],fh1 ));
+            let c = a+b;
+            assert_eq!(c.0[0], fx0 + fx1);
+            assert_eq!(c.0[1], fy0 + fy1);
+            assert_eq!(c.1, fh0 + fh1);
+        }
+
+        #[test]
+        fn proptest_sub(x0 in -1_000_000_000..1_000_000_000i32, y0 in -1_000_000_000..1_000_000_000i32, h0 in 0..1_000_000_000i32, x1 in -1_000_000_000..1_000_000_000i32, y1 in -1_000_000_000..1_000_000_000i32, h1 in 0..1_000_000i32) {
+            // convert our integer range inputs to f32s
+            let (fx0,fy0,fh0) = (x0 as f32 / 1_000.0, y0 as f32 / 1_000.0, h0 as f32 / 1_000.0);
+            let (fx1,fy1,fh1) = (x1 as f32 / 1_000.0, y1 as f32 / 1_000.0, h1 as f32 / 1_000.0);
+
+            let a = HeightVector::<2>::from(([fx0 ,fy0 ],fh0 ));
+            let b = HeightVector::<2>::from(([fx1 ,fy1 ],fh1 ));
+            let c = a-b;
+            assert_eq!(c.0[0], fx0 - fx1);
+            assert_eq!(c.0[1], fy0 - fy1);
+            assert_eq!(c.1, fh0 + fh1);
+        }
+
+        #[test]
+        fn proptest_mul(x in -1_000_000_000..1_000_000_000i32, y in -1_000_000_000..1_000_000_000i32, h in 0..1_000_000_000i32, m in -1_000_000_000..1_000_000_000i32) {
+            // convert our integer range inputs to f32s
+            let (fx,fy,fh,fm) = (x as f32 / 1_000.0, y as f32 / 1_000.0, h as f32 / 1_000.0, m as f32 / 1_000.0);
+
+            let a = HeightVector::<2>::from(([fx, fy], fh));
+            let b = a * fm;
+            if fm < 0.0 {
+                assert_approx_eq!(b.len(), 1.0)
+            } else {
+                assert_eq!(b.0[0], fx * fm);
+                assert_eq!(b.0[1], fy * fm);
+                assert_eq!(b.1, fh * fm);
+            }
+        }
+    }
 
     #[test]
     fn test_len() {

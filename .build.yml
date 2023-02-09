@@ -11,6 +11,7 @@ tasks:
   - stable: |
       rustup default stable
       cd vivaldi-nc/
+      cargo fmt --verbose --check
       cargo clippy --verbose
       cargo build --verbose
       cargo test --verbose

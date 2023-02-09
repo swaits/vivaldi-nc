@@ -110,6 +110,15 @@ and compact binary formats like [bincode](https://crates.io/crates/bincode) and
 See the [module documentation](https://docs.rs/vivaldi-nc) for more detailed
 usage examples.
 
+### Cargo Features
+
+By default, the internal data structures and operations all use `f32`. If you want to use `f64`, you can enable it as a cargo feature:
+
+```toml
+[dependencies]
+vivaldi-nc = { version = "0.5.2", features = ["f64"] }
+```
+
 ### Examples
 
 The repository includes an example which loads a n-to-n latency sample from

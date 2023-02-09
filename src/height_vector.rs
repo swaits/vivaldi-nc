@@ -44,7 +44,7 @@
 
 use core::ops::{Add, Mul, Sub};
 
-use nanorand::{Rng, WyRand};
+use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::vector::{self, Vector};
@@ -99,12 +99,12 @@ impl<const N: usize> HeightVector<N> {
 
     /// A new height vector is a random unit vector
     pub(crate) fn random() -> Self {
-        let mut rng = WyRand::new();
+        let mut rng = rand::thread_rng();
         let mut vec = [0.0; N];
         for i in vec.iter_mut().take(N) {
-            *i = rng.generate::<FloatType>();
+            *i = rng.gen::<FloatType>() - 0.5;
         }
-        let height = rng.generate::<FloatType>().abs();
+        let height = rng.gen::<FloatType>().abs();
         Self {
             position: Vector::<FloatType, N>::from(vec),
             height,
@@ -255,7 +255,11 @@ mod tests {
                 assert_approx_eq!(a.len(), 1.0);
             } else {
                 // `HeightVector` we created from proptest values should be valid and have a length
-                assert_approx_eq!(a.len(), len);
+                if len.is_nan() || len.is_infinite() {
+                    assert!(a.len().is_nan() || a.len().is_infinite());
+                } else {
+                    assert_approx_eq!(a.len(), len);
+                }
             }
         }
 

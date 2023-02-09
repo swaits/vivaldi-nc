@@ -172,10 +172,11 @@ One design goal of this crate is to minimize dependencies. When dependencies
 are required, I try to be very selective about them (re: bloat and licensing).
 This crate depends on:
 
-- [`nanorand`](https://crates.io/crates/nanorand): A fast PRNG based on WyRand.
-  It pulls in `getrandom` as a portable source of entropy. I chose this over
-  the more commonly used, but heavyweight `rand` because it's significantly
-  smaller and does just what I need, and not much more.
+- [`rand`](https://crates.io/crates/rand): I started with `nanorand`; however,
+  this is faster because of `rand::thread_rng()`; whereas with `nanorand` we
+  ended up needing to reimplement that same functionality through something
+  like `lazy_static!` plus `Mutex`, which is not worth it for a few percentage
+  points of performance.
 - [`num-traits`](https://crates.io/crates/num-traits): A brilliant crate which
   makes it easier to operate on numbers in generics; like using `Float` as a
   constraint on a generic type. Its convenience outweighs its cost.
@@ -190,7 +191,8 @@ This crate depends on:
 
 Several crates implemented Vivaldi NC before this one. So, why another?
 
-I had several design goals which the existing crates didn't satisfy:
+I had several design goals which the existing crates didn't satisfy, in order
+of priority:
 
 1. Provide the *simplest interface possible*. I just want to have some sort of
    Coordinate struct and be able to update it, and then use it to estimate
@@ -202,7 +204,10 @@ I had several design goals which the existing crates didn't satisfy:
 3. Serializable/Deserializable by default. These things are useful for sending
    across networks. The intent is to be able to do that without a bunch of
    rigamarole. Support `serde` traits by default.
-4. Well documented. Well tested. This varies by the crates.
+4. Well documented. Well tested. This varies in the existing crates.
+5. Performance. While it's a low priority, it should be reasonable. The library
+   currently does about 10,000 `NetworkCoordinate::update()` calls per
+   millisecond on my Macbook Pro (Intel i7-9750H (12) @ 2.60GHz).
 
 ### Other Vivaldi NC Implementations
 

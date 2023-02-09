@@ -1,29 +1,6 @@
-//! A Vivaldi [`NetworkCoordinate`]
+//! Main interface module for Vivaldi network coordinates.
 //!
-//! This is an implementation of Vivaldi NCs per the original paper. It implements the following
-//! alogirthm (quoting from paper):
-//!
-//! ```text
-//! // Incorporate new information: node j has been
-//! // measured to be rtt ms away, has coordinates x j,
-//! // and an error estimate of e j .
-//! //
-//! // Our own coordinates and error estimate are xi and ei.
-//! //
-//! // The constants ce and cc are tuning parameters.
-//!
-//! vivaldi(rtt, xj, ej)
-//!     // Sample weight balances local and remote error. (1)
-//!     w = ei /(ei + ej)
-//!     // Compute relative error of this sample. (2)
-//!     es = ∣∣∣‖xi − xj‖ − rtt∣∣∣/rtt
-//!     // Update weighted moving average of local error. (3)
-//!     ei = es × ce × w + ei × (1 − ce × w)
-//!     // Update local coordinates. (4)
-//!     δ = cc × w
-//!     xi = xi + δ × (rtt − ‖xi − xj ‖) × u(xi − xj)
-//! ```
-//!
+//! For usage explanation and examples, please see the main [`crate`] documentation.
 
 use std::time::Duration;
 
@@ -58,6 +35,21 @@ const MIN_ERROR: FloatType = FloatType::EPSILON;
 // **** Structs ****
 //
 
+/// A `NetworkCoordinate<N>` is the main interface to a Vivaldi network coordinate.
+///
+/// # Generic Parameters
+///
+/// - `N`: Const generic for number of dimensions. For example, `NetworkCoordinate<3>` is a
+/// 3-Dimentionsal Euclidean coordinate plus a height. Should be a positive number greater than
+/// zero.
+///
+/// **Note:** Dimensions other than 2D or 3D are usually not useful. If you want to use one of
+/// those dimensions, you can use type aliases ([`NetworkCoordinate2D`] or [`NetworkCoordinate3D`])
+/// which are a little more ergonomic than using the generic here.
+///
+/// # Examples
+///
+/// For an explanation and examples of usage, please see the main [`crate`] documentation.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NetworkCoordinate<const N: usize> {
     #[serde(flatten)]
@@ -70,13 +62,13 @@ pub struct NetworkCoordinate<const N: usize> {
 /// A 2D [`NetworkCoordinate`]. Includes a 2D Euclidean position and a height.
 ///
 /// This type alias is just for convenience. It's functionally equivalent to
-/// `NetworkCoordinate<2>`.
+/// `NetworkCoordinate<2>`. For more information, see [`NetworkCoordinate`].
 pub type NetworkCoordinate2D = NetworkCoordinate<2>;
 
 /// A 3D [`NetworkCoordinate`]. Includes a 3D Euclidean position and a height.
 ///
 /// This type alias is just for convenience. It's functionally equivalent to
-/// `NetworkCoordinate<3>`.
+/// `NetworkCoordinate<3>`. For more information, see [`NetworkCoordinate`].
 pub type NetworkCoordinate3D = NetworkCoordinate<3>;
 
 //
@@ -169,6 +161,33 @@ impl<const N: usize> NetworkCoordinate<N> {
     /// // Now we can update our NC to adjust our position relative to the remote node:
     /// local.update(&remote, rtt);
     /// ```
+    ///
+    /// # Algorithm
+    ///
+    /// This is an implementation of Vivaldi NCs per the original paper. It implements the following
+    /// alogirthm (quoting from paper):
+    ///
+    /// ```text
+    /// // Incorporate new information: node j has been
+    /// // measured to be rtt ms away, has coordinates xj,
+    /// // and an error estimate of ej .
+    /// //
+    /// // Our own coordinates and error estimate are xi and ei.
+    /// //
+    /// // The constants ce and cc are tuning parameters.
+    ///
+    /// vivaldi(rtt, xj, ej)
+    ///     // Sample weight balances local and remote error. (1)
+    ///     w = ei /(ei + ej)
+    ///     // Compute relative error of this sample. (2)
+    ///     es = ∣∣∣‖xi − xj‖ − rtt∣∣∣/rtt
+    ///     // Update weighted moving average of local error. (3)
+    ///     ei = es × ce × w + ei × (1 − ce × w)
+    ///     // Update local coordinates. (4)
+    ///     δ = cc × w
+    ///     xi = xi + δ × (rtt − ‖xi − xj ‖) × u(xi − xj)
+    /// ```
+    ///
     pub fn update(&mut self, rhs: &Self, rtt: Duration) -> &Self {
         // convert Durations into FloatType as fractional milliseconds for convenience
         #[cfg(feature = "f32")]

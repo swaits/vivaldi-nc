@@ -20,7 +20,7 @@ use std::ops::{Add, Div, Index, Mul, Sub};
 /// - `N`: the number of dimensions (i.e. 2 for 2D vectors, 3 for 3D, etc)
 #[serde_as]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) struct Vector<T, const N: usize>
+pub struct Vector<T, const N: usize>
 where
     T: Float + Serialize + for<'d> Deserialize<'d>,
 {
@@ -44,10 +44,8 @@ where
 
     /// Compute magnitude of vector.
     pub(crate) fn len(&self) -> T {
-        (0..N)
-            .map(|i| self.inner[i] * self.inner[i])
-            .fold(T::zero(), |sum_sq, x| sum_sq + x)
-            .sqrt()
+        // use hypot() instead of sqrt() of sum of squares to avoid overflows
+        self.inner.iter().fold(T::zero(), |acc, x| acc.hypot(*x))
     }
 
     /// Checks whether the `Vector` is invalid.
@@ -175,9 +173,9 @@ mod tests {
         #[test]
         fn proptest_new(x: f32, y: f32, z: f32){
             let v = Vector::<f32, 3>::from([x,y,z]);
-            assert_eq!(v[0], x);
-            assert_eq!(v[1], y);
-            assert_eq!(v[2], z);
+            assert_approx_eq!(v[0], x);
+            assert_approx_eq!(v[1], y);
+            assert_approx_eq!(v[2], z);
             assert!(v[0].is_finite());
             assert!(v[1].is_finite());
             assert!(v[1].is_finite());
@@ -187,9 +185,25 @@ mod tests {
         fn proptest_mul(x: f32, y: f32, z: f32, m: f32) {
             let v = Vector::<f32, 3>::from([x,y,z]);
             let w = v * m;
-            assert_eq!(v[0] * m, w[0]);
-            assert_eq!(v[1] * m, w[1]);
-            assert_eq!(v[2] * m, w[2]);
+
+            let (x,y,z) = (v[0]*m, v[1]*m, v[2]*m);
+            if x.is_nan() || x.is_infinite() {
+                assert!(w[0].is_nan() || w[0].is_infinite());
+            } else {
+                assert_approx_eq!(w[0], x);
+            }
+
+            if y.is_nan() || y.is_infinite() {
+                assert!(w[1].is_nan() || w[1].is_infinite());
+            } else {
+                assert_approx_eq!(w[1], y);
+            }
+
+            if z.is_nan() || z.is_infinite() {
+                assert!(w[2].is_nan() || w[2].is_infinite());
+            } else {
+                assert_approx_eq!(w[2], z);
+            }
         }
 
         #[test]
@@ -198,23 +212,22 @@ mod tests {
             let w = v / d;
 
             let (x,y,z) = (v[0]/d, v[1]/d, v[2]/d);
-
-            if x.is_nan() {
-                assert!(w[0].is_nan());
+            if x.is_nan() || x.is_infinite() {
+                assert!(w[0].is_nan() ||w[0].is_infinite());
             } else {
-                assert_eq!(v[0] / d, x);
+                assert_approx_eq!(w[0], x);
             }
 
-            if y.is_nan() {
-                assert!(w[1].is_nan());
+            if y.is_nan() || y.is_infinite() {
+                assert!(w[1].is_nan() || w[1].is_infinite());
             } else {
-                assert_eq!(v[1] / d, y);
+                assert_approx_eq!(w[1], y);
             }
 
-            if z.is_nan() {
-                assert!(w[2].is_nan());
+            if z.is_nan() || z.is_infinite() {
+                assert!(w[2].is_nan() || w[2].is_infinite());
             } else {
-                assert_eq!(v[2] / d, z);
+                assert_approx_eq!(w[2], z);
             }
         }
     }
@@ -263,9 +276,9 @@ mod tests {
     #[test]
     fn test_index() {
         let a = Vector::<f32, 3>::from([1.0, 2.0, 3.0]);
-        assert_eq!(a[0], 1.0);
-        assert_eq!(a[1], 2.0);
-        assert_eq!(a[2], 3.0);
+        assert_approx_eq!(a[0], 1.0);
+        assert_approx_eq!(a[1], 2.0);
+        assert_approx_eq!(a[2], 3.0);
     }
     #[test]
     fn test_length() {

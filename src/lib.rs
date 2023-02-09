@@ -93,6 +93,18 @@
 //! ```
 //!
 
+#![deny(clippy::all)]
+#![deny(clippy::correctness)]
+#![deny(clippy::style)]
+#![deny(clippy::suspicious)]
+#![deny(clippy::complexity)]
+#![deny(clippy::perf)]
+#![deny(clippy::cargo)]
+#![deny(clippy::pedantic)]
+#![deny(clippy::nursery)]
+#![allow(clippy::type_repetition_in_bounds)]
+#![allow(clippy::module_name_repetitions)]
+
 mod height_vector;
 mod vector;
 

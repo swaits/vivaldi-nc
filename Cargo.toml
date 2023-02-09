@@ -20,13 +20,24 @@ default = ["f32"]
 f32 = []
 f64 = []
 
+[profile.bench]
+debug = true
+
+[profile.release]
+debug = true
+
 [dev-dependencies]
 assert_approx_eq = "1.1.0"
+criterion = "0.4.0"
 proptest = "1.0.0"
 serde_json = "1.0.91"
 
+[[bench]]
+name = "million-updates"
+harness = false
+
 [dependencies]
-nanorand = {version = "0.7.0", features = ["wyrand", "getrandom"]}
 num-traits = "0.2.15"
+rand = "0.8.5"
 serde = {version = "1.0.152", features = ["serde_derive"]}
 serde_with = "2.2.0"

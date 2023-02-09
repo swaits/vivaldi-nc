@@ -8,7 +8,7 @@ use std::{
     time::Duration,
 };
 
-use nanorand::{Rng, WyRand};
+use rand::Rng;
 use vivaldi_nc::NetworkCoordinate;
 
 // this will return a Vec<Vec<Duration>>
@@ -66,10 +66,10 @@ fn main() {
     // 4. adjust local NC
     let mut error = 0.0;
     for _ in 0..30_000 {
-        let mut rng = WyRand::new();
+        let mut rng = rand::thread_rng();
         // 1. choose a local and remote NC
-        let i_local = rng.generate::<usize>() % NUM_NODES;
-        let i_remote = rng.generate::<usize>() % NUM_NODES;
+        let i_local = rng.gen_range(0..NUM_NODES);
+        let i_remote = rng.gen_range(0..NUM_NODES);
         if i_local == i_remote {
             continue;
         }

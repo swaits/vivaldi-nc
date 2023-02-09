@@ -1,6 +1,6 @@
 [package]
 name = "vivaldi-nc"
-version = "0.5.1"
+version = "0.5.2"
 edition = "2021"
 authors = ["Stephen Waits <steve@waits.net>"]
 description = "Vivaldi network coordinates for fast, distributed latency estimates in multinode networks, with a clean and simple interface."
@@ -14,6 +14,11 @@ repository = "https://git.sr.ht/~swaits/vivaldi-nc"
 exclude = [
 	"examples/*",
 ]
+
+[features]
+default = ["f32"]
+f32 = []
+f64 = []
 
 [dev-dependencies]
 assert_approx_eq = "1.1.0"

@@ -50,6 +50,15 @@ use serde::{Deserialize, Serialize};
 use crate::vector::Vector;
 
 //
+// **** Features ****
+//
+#[cfg(feature = "f32")]
+type FloatType = f32;
+
+#[cfg(feature = "f64")]
+type FloatType = f64;
+
+//
 // **** Constants ****
 //
 
@@ -65,8 +74,8 @@ use crate::vector::Vector;
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub(crate) struct HeightVector<const N: usize> {
     #[serde(flatten)]
-    position: Vector<f32, N>,
-    height: f32,
+    position: Vector<FloatType, N>,
+    height: FloatType,
 }
 
 //
@@ -84,11 +93,11 @@ impl<const N: usize> HeightVector<N> {
         let mut rng = WyRand::new();
         let mut vec = [0.0; N];
         for i in vec.iter_mut().take(N) {
-            *i = rng.generate::<f32>();
+            *i = rng.generate::<FloatType>();
         }
-        let height = rng.generate::<f32>().abs();
+        let height = rng.generate::<FloatType>().abs();
         Self {
-            position: Vector::<f32, N>::from(vec),
+            position: Vector::<FloatType, N>::from(vec),
             height,
         }
         .normalized()
@@ -96,7 +105,7 @@ impl<const N: usize> HeightVector<N> {
 
     /// The magnitude of a Vivaldi height vector is defined as the magnitude of the vector plus the
     /// height value.
-    pub(crate) fn len(&self) -> f32 {
+    pub(crate) fn len(&self) -> FloatType {
         self.position.len() + self.height
     }
 
@@ -104,7 +113,7 @@ impl<const N: usize> HeightVector<N> {
     /// by the inveerse of its length.
     pub(crate) fn normalized(&self) -> Self {
         let len = self.len();
-        if len < f32::EPSILON {
+        if len < FloatType::EPSILON {
             // if we have a bad vector, generate a new random vector
             Self::new()
         } else {
@@ -150,11 +159,11 @@ impl<const N: usize> Default for HeightVector<N> {
     }
 }
 
-impl<const N: usize> From<([f32; N], f32)> for HeightVector<N> {
-    /// Convert from a `([f32; N], f32)` (vector, height) to a Vivaldi height vector type.
-    fn from(value: ([f32; N], f32)) -> Self {
+impl<const N: usize> From<([FloatType; N], FloatType)> for HeightVector<N> {
+    /// Convert from a `([FloatType; N], FloatType)` (vector, height) to a Vivaldi height vector type.
+    fn from(value: ([FloatType; N], FloatType)) -> Self {
         let ret = Self {
-            position: Vector::<f32, N>::from(value.0),
+            position: Vector::<FloatType, N>::from(value.0),
             height: value.1,
         };
         if ret.is_valid() {
@@ -200,11 +209,11 @@ impl<const N: usize> Sub for HeightVector<N> {
     }
 }
 
-impl<const N: usize> Mul<f32> for HeightVector<N> {
+impl<const N: usize> Mul<FloatType> for HeightVector<N> {
     type Output = Self;
 
     /// Multiply a Vivaldi height vector by a scalar. Works the same as normal vector scaling.
-    fn mul(self, rhs: f32) -> Self::Output {
+    fn mul(self, rhs: FloatType) -> Self::Output {
         let ret = Self {
             position: self.position * rhs,
             height: self.height * rhs,
@@ -228,7 +237,7 @@ mod tests {
 
     proptest! {
         #[test]
-        fn proptest_len(x: f32, y: f32, h: f32) {
+        fn proptest_len(x: FloatType, y: FloatType, h: FloatType) {
             let len = ((x*x) + (y*y)).sqrt() + h.abs();
             let a = HeightVector::<2>::from(([x,y],h));
             if x.is_nan() || x.is_infinite() || y.is_nan() || y.is_infinite() || h.is_nan() || h.is_infinite() || h < 0.0 {
@@ -242,9 +251,9 @@ mod tests {
 
         #[test]
         fn proptest_add(x0 in -1_000_000_000..1_000_000_000i32, y0 in -1_000_000_000..1_000_000_000i32, h0 in 0..1_000_000_000i32, x1 in -1_000_000_000..1_000_000_000i32, y1 in -1_000_000_000..1_000_000_000i32, h1 in 0..1_000_000i32) {
-            // convert our integer range inputs to f32s
-            let (fx0,fy0,fh0) = (x0 as f32 / 1_000.0, y0 as f32 / 1_000.0, h0 as f32 / 1_000.0);
-            let (fx1,fy1,fh1) = (x1 as f32 / 1_000.0, y1 as f32 / 1_000.0, h1 as f32 / 1_000.0);
+            // convert our integer range inputs to FloatType
+            let (fx0,fy0,fh0) = (x0 as FloatType / 1_000.0, y0 as FloatType / 1_000.0, h0 as FloatType / 1_000.0);
+            let (fx1,fy1,fh1) = (x1 as FloatType / 1_000.0, y1 as FloatType / 1_000.0, h1 as FloatType / 1_000.0);
 
             let a = HeightVector::<2>::from(([fx0 ,fy0 ],fh0 ));
             let b = HeightVector::<2>::from(([fx1 ,fy1 ],fh1 ));
@@ -256,9 +265,9 @@ mod tests {
 
         #[test]
         fn proptest_sub(x0 in -1_000_000_000..1_000_000_000i32, y0 in -1_000_000_000..1_000_000_000i32, h0 in 0..1_000_000_000i32, x1 in -1_000_000_000..1_000_000_000i32, y1 in -1_000_000_000..1_000_000_000i32, h1 in 0..1_000_000i32) {
-            // convert our integer range inputs to f32s
-            let (fx0,fy0,fh0) = (x0 as f32 / 1_000.0, y0 as f32 / 1_000.0, h0 as f32 / 1_000.0);
-            let (fx1,fy1,fh1) = (x1 as f32 / 1_000.0, y1 as f32 / 1_000.0, h1 as f32 / 1_000.0);
+            // convert our integer range inputs to FloatType
+            let (fx0,fy0,fh0) = (x0 as FloatType / 1_000.0, y0 as FloatType / 1_000.0, h0 as FloatType / 1_000.0);
+            let (fx1,fy1,fh1) = (x1 as FloatType / 1_000.0, y1 as FloatType / 1_000.0, h1 as FloatType / 1_000.0);
 
             let a = HeightVector::<2>::from(([fx0 ,fy0 ],fh0 ));
             let b = HeightVector::<2>::from(([fx1 ,fy1 ],fh1 ));
@@ -270,8 +279,8 @@ mod tests {
 
         #[test]
         fn proptest_mul(x in -1_000_000_000..1_000_000_000i32, y in -1_000_000_000..1_000_000_000i32, h in 0..1_000_000_000i32, m in -1_000_000_000..1_000_000_000i32) {
-            // convert our integer range inputs to f32s
-            let (fx,fy,fh,fm) = (x as f32 / 1_000.0, y as f32 / 1_000.0, h as f32 / 1_000.0, m as f32 / 1_000.0);
+            // convert our integer range inputs to FloatType
+            let (fx,fy,fh,fm) = (x as FloatType / 1_000.0, y as FloatType / 1_000.0, h as FloatType / 1_000.0, m as FloatType / 1_000.0);
 
             let a = HeightVector::<2>::from(([fx, fy], fh));
             let b = a * fm;

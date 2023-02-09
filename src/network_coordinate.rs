@@ -32,18 +32,27 @@ use serde::{Deserialize, Serialize};
 use crate::height_vector::HeightVector;
 
 //
+// **** Features ****
+//
+#[cfg(feature = "f32")]
+type FloatType = f32;
+
+#[cfg(feature = "f64")]
+type FloatType = f64;
+
+//
 // **** Constants ****
 //
 
 // Vivaldi tuning parameters
-const C_ERROR: f32 = 0.25;
-const C_DELTA: f32 = 0.25;
+const C_ERROR: FloatType = 0.25;
+const C_DELTA: FloatType = 0.25;
 
 // initial error value
-const DEFAULT_ERROR: f32 = 200.0;
+const DEFAULT_ERROR: FloatType = 200.0;
 
 // error should always be greater than zero
-const MIN_ERROR: f32 = f32::EPSILON;
+const MIN_ERROR: FloatType = FloatType::EPSILON;
 
 //
 // **** Structs ****
@@ -53,7 +62,7 @@ const MIN_ERROR: f32 = f32::EPSILON;
 pub struct NetworkCoordinate<const N: usize> {
     #[serde(flatten)]
     heightvec: HeightVector<N>,
-    error: f32,
+    error: FloatType,
 }
 
 // type aliases for convenience
@@ -121,7 +130,11 @@ impl<const N: usize> NetworkCoordinate<N> {
     ///
     pub fn estimated_rtt(&self, rhs: &Self) -> Duration {
         // estimated rss is euclidean distance between the two plus the sum of the heights
-        Duration::from_secs_f32((self.heightvec - rhs.heightvec).len() / 1000.0)
+        #[cfg(feature = "f32")]
+        return Duration::from_secs_f32((self.heightvec - rhs.heightvec).len() / 1000.0);
+
+        #[cfg(feature = "f64")]
+        return Duration::from_secs_f64((self.heightvec - rhs.heightvec).len() / 1000.0);
     }
 
     /// Given another Vivaldi [`NetworkCoordinate`], adjust our coordinateto better represent the actual round
@@ -155,14 +168,21 @@ impl<const N: usize> NetworkCoordinate<N> {
     /// local.update(&remote, rtt);
     /// ```
     pub fn update(&mut self, rhs: &Self, rtt: Duration) -> &Self {
+        // convert Durations into FloatType as fractional milliseconds for convenience
+        #[cfg(feature = "f32")]
+        let rtt_ms = rtt.as_secs_f32() * 1000.0;
+        #[cfg(feature = "f32")]
+        let rtt_estimated_ms = self.estimated_rtt(rhs).as_secs_f32() * 1000.0;
+
+        #[cfg(feature = "f64")]
+        let rtt_ms = rtt.as_secs_f64() * 1000.0;
+        #[cfg(feature = "f64")]
+        let rtt_estimated_ms = self.estimated_rtt(rhs).as_secs_f64() * 1000.0;
+
         // rtt needs to be positive
-        if rtt.as_secs_f32() < 0.0 {
+        if rtt_ms < 0.0 {
             return self;
         }
-
-        // convert Durations into f32s as fractional milliseconds for convenience
-        let rtt_ms = rtt.as_secs_f32() * 1000.0;
-        let rtt_estimated_ms = self.estimated_rtt(rhs).as_secs_f32() * 1000.0;
 
         // Sample weight balances local and remote error. (1)
         // w = ei /(ei + ej )
@@ -196,7 +216,7 @@ impl<const N: usize> NetworkCoordinate<N> {
 
     /// getter for error value - useful for consumers to understand the estimated accuracty of this
     /// `NetworkCoordinate`
-    pub fn error(&self) -> f32 {
+    pub fn error(&self) -> FloatType {
         self.error
     }
 }

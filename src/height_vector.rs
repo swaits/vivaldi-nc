@@ -42,19 +42,22 @@
 //! > Each node has a positive height element in its coordinates, so that
 //! > its height can always be scaled up or down.
 
-use std::ops::{Add, Mul, Sub};
+use core::ops::{Add, Mul, Sub};
 
 use nanorand::{Rng, WyRand};
 use serde::{Deserialize, Serialize};
 
-use crate::vector::Vector;
+use crate::vector::{self, Vector};
 
 //
 // **** Features ****
 //
+
+/// `FloatType` is a type alias for either `f32` or `f64` depending on cargo features
 #[cfg(feature = "f32")]
 type FloatType = f32;
 
+/// `FloatType` is a type alias for either `f32` or `f64` depending on cargo features
 #[cfg(feature = "f64")]
 type FloatType = f64;
 
@@ -72,9 +75,15 @@ type FloatType = f64;
 ///
 /// - `N`: the dimensionality of the vector portion (i.e. non-height) of the Vivaldi height vector
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
-pub(crate) struct HeightVector<const N: usize> {
+pub struct HeightVector<const N: usize> {
+    /// `position` is the Euclidean coordinate part of the `HeightVector`, representing a position
+    /// in the network's latency space
     #[serde(flatten)]
     position: Vector<FloatType, N>,
+
+    /// `height` is a representation of a node's stemp time, or its latency to get into the network
+    /// core (or backbone). It's a way to account for triangle inequality violations.
+    /// in the network's latency space
     height: FloatType,
 }
 
@@ -153,7 +162,7 @@ impl<const N: usize> Default for HeightVector<N> {
     /// Default value for a Vivaldi height vector is just the defaults of its children types.
     fn default() -> Self {
         Self {
-            position: Default::default(),
+            position: vector::Vector::default(),
             height: Default::default(),
         }
     }
@@ -238,14 +247,15 @@ mod tests {
     proptest! {
         #[test]
         fn proptest_len(x: FloatType, y: FloatType, h: FloatType) {
-            let len = ((x*x) + (y*y)).sqrt() + h.abs();
+            let len = x.hypot(y) + h.abs();
             let a = HeightVector::<2>::from(([x,y],h));
+            println!("a = {a:#?}");
             if x.is_nan() || x.is_infinite() || y.is_nan() || y.is_infinite() || h.is_nan() || h.is_infinite() || h < 0.0 {
                 // we should've gottne a random univ vector here
                 assert_approx_eq!(a.len(), 1.0);
             } else {
                 // `HeightVector` we created from proptest values should be valid and have a length
-                assert_eq!(a.len(), len);
+                assert_approx_eq!(a.len(), len);
             }
         }
 
@@ -258,9 +268,9 @@ mod tests {
             let a = HeightVector::<2>::from(([fx0 ,fy0 ],fh0 ));
             let b = HeightVector::<2>::from(([fx1 ,fy1 ],fh1 ));
             let c = a+b;
-            assert_eq!(c.position[0], fx0 + fx1);
-            assert_eq!(c.position[1], fy0 + fy1);
-            assert_eq!(c.height, fh0 + fh1);
+            assert_approx_eq!(c.position[0], fx0 + fx1);
+            assert_approx_eq!(c.position[1], fy0 + fy1);
+            assert_approx_eq!(c.height, fh0 + fh1);
         }
 
         #[test]
@@ -272,9 +282,9 @@ mod tests {
             let a = HeightVector::<2>::from(([fx0 ,fy0 ],fh0 ));
             let b = HeightVector::<2>::from(([fx1 ,fy1 ],fh1 ));
             let c = a-b;
-            assert_eq!(c.position[0], fx0 - fx1);
-            assert_eq!(c.position[1], fy0 - fy1);
-            assert_eq!(c.height, fh0 + fh1);
+            assert_approx_eq!(c.position[0], fx0 - fx1);
+            assert_approx_eq!(c.position[1], fy0 - fy1);
+            assert_approx_eq!(c.height, fh0 + fh1);
         }
 
         #[test]
@@ -285,11 +295,11 @@ mod tests {
             let a = HeightVector::<2>::from(([fx, fy], fh));
             let b = a * fm;
             if fm < 0.0 {
-                assert_approx_eq!(b.len(), 1.0)
+                assert_approx_eq!(b.len(), 1.0);
             } else {
-                assert_eq!(b.position[0], fx * fm);
-                assert_eq!(b.position[1], fy * fm);
-                assert_eq!(b.height, fh * fm);
+                assert_approx_eq!(b.position[0], fx * fm);
+                assert_approx_eq!(b.position[1], fy * fm);
+                assert_approx_eq!(b.height, fh * fm);
             }
         }
     }
@@ -317,9 +327,9 @@ mod tests {
     #[test]
     fn test_from() {
         let a = HeightVector::<2>::from(([1.0, 2.0], 3.0));
-        assert_eq!(a.position[0], 1.0);
-        assert_eq!(a.position[1], 2.0);
-        assert_eq!(a.height, 3.0);
+        assert_approx_eq!(a.position[0], 1.0);
+        assert_approx_eq!(a.position[1], 2.0);
+        assert_approx_eq!(a.height, 3.0);
     }
 
     #[test]
@@ -327,9 +337,9 @@ mod tests {
         let a = HeightVector::<2>::from(([1.0, 2.0], 3.0));
         let b = HeightVector::<2>::from(([3.0, 2.0], 1.0));
         let c = a + b;
-        assert_eq!(c.position[0], 4.0);
-        assert_eq!(c.position[1], 4.0);
-        assert_eq!(c.height, 4.0);
+        assert_approx_eq!(c.position[0], 4.0);
+        assert_approx_eq!(c.position[1], 4.0);
+        assert_approx_eq!(c.height, 4.0);
     }
 
     #[test]
@@ -337,17 +347,17 @@ mod tests {
         let a = HeightVector::<2>::from(([1.0, 2.0], 3.0));
         let b = HeightVector::<2>::from(([3.0, 2.0], 1.0));
         let c = a - b;
-        assert_eq!(c.position[0], -2.0);
-        assert_eq!(c.position[1], 0.0);
-        assert_eq!(c.height, 4.0);
+        assert_approx_eq!(c.position[0], -2.0);
+        assert_approx_eq!(c.position[1], 0.0);
+        assert_approx_eq!(c.height, 4.0);
     }
 
     #[test]
     fn test_mul_scalar() {
         let a = HeightVector::<2>::from(([1.0, 2.0], 3.0)) * 10.0;
-        assert_eq!(a.position[0], 10.0);
-        assert_eq!(a.position[1], 20.0);
-        assert_eq!(a.height, 30.0);
+        assert_approx_eq!(a.position[0], 10.0);
+        assert_approx_eq!(a.position[1], 20.0);
+        assert_approx_eq!(a.height, 30.0);
     }
 
     #[test]

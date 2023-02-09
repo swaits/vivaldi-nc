@@ -11,13 +11,15 @@ tasks:
   - stable: |
       rustup default stable
       cd vivaldi-nc/
+      cargo clippy --verbose
       cargo build --verbose
       cargo test --verbose
   - nightly: |
       rustup default nightly
       cd vivaldi-nc/
-      cargo build --verbose ||:
-      cargo test --verbose  ||:
+      cargo clippy --verbose ||:
+      cargo build --verbose  ||:
+      cargo test --verbose   ||:
   - docs: |
       cd vivaldi-nc/
       rustup run stable cargo doc --no-deps

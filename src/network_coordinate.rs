@@ -97,6 +97,7 @@ impl<const N: usize> NetworkCoordinate<N> {
     /// // print the NC
     /// println!("Our new NC is: {:#?}", a);
     /// ```
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -128,6 +129,7 @@ impl<const N: usize> NetworkCoordinate<N> {
     /// println!("Estimated RTT: {}", a.estimated_rtt(&b).as_millis());
     /// ```
     ///
+    #[must_use]
     pub fn estimated_rtt(&self, rhs: &Self) -> Duration {
         // estimated rss is euclidean distance between the two plus the sum of the heights
         #[cfg(feature = "f32")]
@@ -195,7 +197,11 @@ impl<const N: usize> NetworkCoordinate<N> {
 
         // Update weighted moving average of local error. (3)
         // ei = es × ce × w + ei × (1 − ce × w)
-        self.error = (es * C_ERROR * w + self.error * (1.0 - C_ERROR * w)).max(MIN_ERROR);
+        // self.error = (es * C_ERROR * w + self.error * (1.0 - C_ERROR * w)).max(MIN_ERROR);
+        // NOTE: using `mul_add()` which is a little safer (avoid overflows)
+        self.error = (es * C_ERROR)
+            .mul_add(w, self.error * C_ERROR.mul_add(-w, 1.0))
+            .max(MIN_ERROR);
 
         // Update local coordinates. (4)
         // δ = cc × w
@@ -207,7 +213,7 @@ impl<const N: usize> NetworkCoordinate<N> {
         // if we ended up with an invalid coordinate, return a new random coordinate with default
         // error
         if self.heightvec.is_invalid() {
-            *self = Self::new()
+            *self = Self::new();
         }
 
         // return reference to updated self
@@ -216,7 +222,8 @@ impl<const N: usize> NetworkCoordinate<N> {
 
     /// getter for error value - useful for consumers to understand the estimated accuracty of this
     /// `NetworkCoordinate`
-    pub fn error(&self) -> FloatType {
+    #[must_use]
+    pub const fn error(&self) -> FloatType {
         self.error
     }
 }
@@ -226,7 +233,7 @@ impl<const N: usize> NetworkCoordinate<N> {
 //
 
 impl<const N: usize> Default for NetworkCoordinate<N> {
-    /// A default `NetworkCoordinate` has a random position and DEFAULT_ERROR
+    /// A default `NetworkCoordinate` has a random position and `DEFAULT_ERROR`
     fn default() -> Self {
         Self {
             heightvec: HeightVector::<N>::random(),
@@ -293,10 +300,8 @@ mod tests {
         let mut mad = NetworkCoordinate::<2>::new();
 
         // verify the initial error
-        let error =
-            (slc.error.powf(2.0) + nyc.error.powf(2.0) + lax.error.powf(2.0) + mad.error.powf(2.0))
-                .sqrt();
-        assert_eq!(error, 400.0);
+        let error = slc.error.hypot(nyc.error.hypot(lax.error.hypot(mad.error)));
+        assert_approx_eq!(error, 400.0);
 
         // iterate plenty of times to converge and minimize error
         (0..20).for_each(|_| {
@@ -333,7 +338,7 @@ mod tests {
 
         // make sure it's the right length and works like we expect a normal NC
         assert_approx_eq!(a.heightvec.len(), 2.649_509, 0.001);
-        assert_eq!(a.error, 1.0);
+        assert_approx_eq!(a.error, 1.0);
         assert_eq!(a.estimated_rtt(&a).as_millis(), 0);
 
         // serialize it into a new JSON string and make sure it matches the original

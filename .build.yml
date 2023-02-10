@@ -8,19 +8,32 @@ tasks:
       rustup toolchain install nightly stable
       cd vivaldi-nc/
       rustup run stable cargo fetch
-  - stable: |
+  - format: |
       rustup default stable
       cd vivaldi-nc/
       cargo fmt --verbose --check
+  - lint: |
+      rustup default stable
+      cd vivaldi-nc/
       cargo clippy --verbose
+  - stable: |
+      rustup default stable
+      cd vivaldi-nc/
       cargo build --verbose
-      cargo test --verbose
+      cargo test --verbose --no-default-features --features f32
+      cargo test --verbose --no-default-features --features f64
+  - bench: |
+      rustup default stable
+      cd vivaldi-nc/
+      cargo bench --verbose --no-default-features --features f32
+      cargo bench --verbose --no-default-features --features f64
   - nightly: |
       rustup default nightly
       cd vivaldi-nc/
       cargo clippy --verbose ||:
       cargo build --verbose  ||:
-      cargo test --verbose   ||:
+      cargo test --verbose --no-default-features --features f32 ||:
+      cargo test --verbose --no-default-features --features f64 ||:
   - docs: |
       cd vivaldi-nc/
       rustup run stable cargo doc --no-deps

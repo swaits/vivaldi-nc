@@ -2,6 +2,18 @@
 //
 // for info on the format, see `NetLatency-Data/README.md`
 
+//
+// **** Features ****
+//
+
+/// `FloatType` is a type alias for either `f32` or `f64` depending on cargo features
+#[cfg(feature = "f32")]
+type FloatType = f32;
+
+/// `FloatType` is a type alias for either `f32` or `f64` depending on cargo features
+#[cfg(feature = "f64")]
+type FloatType = f64;
+
 use std::{
     fs::File,
     io::{BufReader, Read},
@@ -85,7 +97,7 @@ fn main() {
         nc[i_local].update(&nc_remote, rtt_measured);
 
         // complete, now let's sum up the error
-        error = nc.iter().map(|n| n.error()).sum::<f32>() / NUM_NODES as f32;
+        error = nc.iter().map(|n| n.error()).sum::<FloatType>() / NUM_NODES as FloatType;
         assert!(error.is_finite());
         if error < 5.0 {
             break;

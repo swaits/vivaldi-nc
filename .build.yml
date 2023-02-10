@@ -22,11 +22,6 @@ tasks:
       cargo build --verbose
       cargo test --verbose --no-default-features --features f32
       cargo test --verbose --no-default-features --features f64
-  - bench: |
-      rustup default stable
-      cd vivaldi-nc/
-      cargo bench --verbose --no-default-features --features f32
-      cargo bench --verbose --no-default-features --features f64
   - nightly: |
       rustup default nightly
       cd vivaldi-nc/
@@ -34,6 +29,18 @@ tasks:
       cargo build --verbose  ||:
       cargo test --verbose --no-default-features --features f32 ||:
       cargo test --verbose --no-default-features --features f64 ||:
+  - bench: |
+      rustup default stable
+      cd vivaldi-nc/
+      cargo bench --verbose --no-default-features --features f32
+      cargo bench --verbose --no-default-features --features f64
+  - examples: |
+      rustup default stable
+      cd vivaldi-nc/
+      cargo run --verbose --no-default-features --features f32 --example planetlab
+      cargo run --verbose --no-default-features --features f64 --example planetlab
+      cargo run --verbose --no-default-features --features f32 --example planetlab --release
+      cargo run --verbose --no-default-features --features f64 --example planetlab --release
   - docs: |
       cd vivaldi-nc/
       rustup run stable cargo doc --no-deps

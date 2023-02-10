@@ -11,7 +11,7 @@
 type FloatType = f32;
 
 /// `FloatType` is a type alias for either `f32` or `f64` depending on cargo features
-#[cfg(feature = "f64")]
+#[cfg(not(feature = "f32"))]
 type FloatType = f64;
 
 use std::{

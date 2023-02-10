@@ -58,7 +58,7 @@ use crate::vector::{self, Vector};
 type FloatType = f32;
 
 /// `FloatType` is a type alias for either `f32` or `f64` depending on cargo features
-#[cfg(feature = "f64")]
+#[cfg(not(feature = "f32"))]
 type FloatType = f64;
 
 //
@@ -122,15 +122,16 @@ impl<const N: usize> HeightVector<N> {
     /// by the inveerse of its length.
     pub(crate) fn normalized(&self) -> Self {
         let len = self.len();
-        if len < FloatType::EPSILON {
+        // scale it by the inverse of its magnitude like any normal vector
+        let ret = Self {
+            position: self.position / len,
+            height: self.height / len,
+        };
+        if ret.is_valid() {
+            ret
+        } else {
             // if we have a bad vector, generate a new random vector
             Self::new()
-        } else {
-            // otherwise scale it by the inverse of its magnitude like any normal vector
-            Self {
-                position: self.position / len,
-                height: self.height / len,
-            }
         }
     }
 
@@ -376,5 +377,37 @@ mod tests {
         // serialize it into a new JSON string and make sure it matches the original
         let t = serde_json::to_string(&a);
         assert_eq!(t.as_ref().unwrap(), s);
+    }
+
+    #[test]
+    fn test_sub_invalid() {
+        let valid = HeightVector::<2>::from(([1.0, 2.0], 3.0));
+        let mut invalid = HeightVector::<2>::from(([1.0, 2.0], 3.0));
+        // force invalidity here - because `::from()` actually also catches this
+        invalid.height = 1.0 / 0.0;
+        let result = valid - invalid;
+        assert_approx_eq!(result.len(), 1.0);
+    }
+
+    #[test]
+    fn test_add_invalid() {
+        let valid = HeightVector::<2>::from(([1.0, 2.0], 3.0));
+        let mut invalid = HeightVector::<2>::from(([1.0 / 0.0, 2.0], 3.0));
+
+        // make sure `from()` caught and replaced the invalid vec
+        assert_approx_eq!(invalid.len(), 1.0);
+
+        // force invalidity here - because `::from()` actually also catches this
+        invalid.height = 1.0 / 0.0;
+        let result = valid + invalid;
+        assert_approx_eq!(result.len(), 1.0);
+    }
+
+    #[test]
+    fn test_zero_norm() {
+        let a = HeightVector::<2>::from(([0.0, 0.0], 0.0));
+        let b = a.normalized();
+        let len = b.len();
+        assert_approx_eq!(len, 1.0);
     }
 }

@@ -16,9 +16,8 @@ exclude = [
 ]
 
 [features]
-default = ["f32"]
+default = []
 f32 = []
-f64 = []
 
 [profile.bench]
 debug = true

@@ -1,6 +1,7 @@
 image: archlinux
 packages:
   - rustup
+  - cargo-tarpaulin
 sources:
   - https://git.sr.ht/~swaits/vivaldi-nc
 artifacts:
@@ -10,7 +11,6 @@ tasks:
       rustup toolchain install nightly stable
       cd vivaldi-nc/
       rustup run stable cargo fetch
-      cargo install cargo-tarpaulin -f
   - format: |
       rustup default stable
       cd vivaldi-nc/

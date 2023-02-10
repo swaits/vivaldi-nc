@@ -112,11 +112,13 @@ usage examples.
 
 ### Cargo Features
 
-By default, the internal data structures and operations all use `f32`. If you want to use `f64`, you can enable it as a cargo feature:
+By default, the internal data structures and operations all use `f64`, which is
+slightly faster on modern architectures. If you want to use `f32` instead, you
+can enable it as a cargo feature:
 
 ```toml
 [dependencies]
-vivaldi-nc = { version = "0.5.2", features = ["f64"] }
+vivaldi-nc = { version = "(version)", features = ["f32"] }
 ```
 
 ### Examples

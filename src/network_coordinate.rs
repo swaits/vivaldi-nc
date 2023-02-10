@@ -14,7 +14,7 @@ use crate::height_vector::HeightVector;
 #[cfg(feature = "f32")]
 type FloatType = f32;
 
-#[cfg(feature = "f64")]
+#[cfg(not(feature = "f32"))]
 type FloatType = f64;
 
 //
@@ -127,7 +127,7 @@ impl<const N: usize> NetworkCoordinate<N> {
         #[cfg(feature = "f32")]
         return Duration::from_secs_f32((self.heightvec - rhs.heightvec).len() / 1000.0);
 
-        #[cfg(feature = "f64")]
+        #[cfg(not(feature = "f32"))]
         return Duration::from_secs_f64((self.heightvec - rhs.heightvec).len() / 1000.0);
     }
 
@@ -195,14 +195,17 @@ impl<const N: usize> NetworkCoordinate<N> {
         #[cfg(feature = "f32")]
         let rtt_estimated_ms = self.estimated_rtt(rhs).as_secs_f32() * 1000.0;
 
-        #[cfg(feature = "f64")]
+        #[cfg(not(feature = "f32"))]
         let rtt_ms = rtt.as_secs_f64() * 1000.0;
-        #[cfg(feature = "f64")]
+        #[cfg(not(feature = "f32"))]
         let rtt_estimated_ms = self.estimated_rtt(rhs).as_secs_f64() * 1000.0;
 
         // rtt needs to be positive
         if rtt_ms < 0.0 {
-            return self;
+            // Note: `rtt` is guaranteed to be positive because `Duration` enforces it.
+            //       If this panics, something changed where `Duration` now allows for negative
+            //       values.
+            unreachable!();
         }
 
         // Sample weight balances local and remote error. (1)
@@ -233,6 +236,10 @@ impl<const N: usize> NetworkCoordinate<N> {
         // error
         if self.heightvec.is_invalid() {
             *self = Self::new();
+
+            // We should never get here because the call to `normalized()` above should catch any
+            // invalid `heightvec`
+            unreachable!();
         }
 
         // return reference to updated self
@@ -375,5 +382,12 @@ mod tests {
 
         let estimate = a.estimated_rtt(&b);
         assert_approx_eq!(estimate.as_secs_f32(), 0.080_099);
+    }
+
+    #[test]
+    fn test_error_getter() {
+        let s = "{\"position\":[1.5,0.5,2.0],\"height\":25.0,\"error\":1.0}";
+        let a: NetworkCoordinate<3> = serde_json::from_str(s).unwrap();
+        assert_approx_eq!(a.error(), 1.0);
     }
 }

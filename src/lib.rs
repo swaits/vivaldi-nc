@@ -108,10 +108,6 @@
 mod height_vector;
 mod vector;
 
-// make sure we don't have conflicting features
-#[cfg(all(feature = "f32", feature = "f64"))]
-compile_error!("feature \"f32\" and feature \"f64\" cannot be enabled at the same time");
-
 // publish our interface
 pub mod network_coordinate;
 pub use network_coordinate::NetworkCoordinate;

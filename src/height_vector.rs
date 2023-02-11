@@ -93,11 +93,6 @@ pub struct HeightVector<const N: usize> {
 
 impl<const N: usize> HeightVector<N> {
     /// A new height vector is a random unit vector
-    pub(crate) fn new() -> Self {
-        Self::random()
-    }
-
-    /// A new height vector is a random unit vector
     pub(crate) fn random() -> Self {
         let mut rng = rand::thread_rng();
         let mut vec = [0.0; N];
@@ -131,7 +126,7 @@ impl<const N: usize> HeightVector<N> {
             ret
         } else {
             // if we have a bad vector, generate a new random vector
-            Self::new()
+            Self::random()
         }
     }
 
@@ -318,7 +313,7 @@ mod tests {
     #[test]
     fn test_new() {
         // new gives us a random unit length vec
-        let a = HeightVector::<3>::new();
+        let a = HeightVector::<3>::random();
         assert_approx_eq!(a.len(), 1.0);
     }
 

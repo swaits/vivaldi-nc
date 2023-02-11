@@ -123,9 +123,9 @@ vivaldi-nc = { version = "(version)", features = ["f32"] }
 
 ### Examples
 
-The repository includes an example which loads a n-to-n latency sample from
-PlanetLab and iterates on `NetworkCoordinate`s until some low-enough mean error
-is reached. The output is a JSON array of elements which contain the NC's
+The repository includes an example which loads a 490 node N-to-N latency sample
+from PlanetLab and iterates on `NetworkCoordinate`s until some low-enough mean
+error is reached. The output is a JSON array of elements which contain the NC's
 position, its height (or stem latency estimate), and its estimation of error
 (lower is better) that look like this:
 
@@ -188,6 +188,10 @@ This crate depends on:
 - [`serde_with`](https://crates.io/crates/serde_with): Because the inner
   `Vector<T,N>` uses a const generic length, we use this to help derive
   `Deserialize`.
+- [`array-init`](https://crates.io/crates/array-init): Makes the array
+  operations for the internal `Vector` so much nicer. Once we have
+  `feature(array_zip)` stabilized, we could use that instead. Until then, this
+  works well with zero performance impact.
 
 ## Design Goals & Alternatives
 

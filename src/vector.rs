@@ -3,6 +3,7 @@
 //! This is the simplest possible implementation of a vector to support the needs of a
 //! Vivaldi `HeightVector`.
 
+use array_init::array_init;
 use num_traits::Float;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
@@ -37,11 +38,6 @@ impl<T, const N: usize> Vector<T, N>
 where
     T: Float + Serialize + for<'d> Deserialize<'d>,
 {
-    /// Create a new Zero vector.
-    pub(crate) fn new() -> Self {
-        Self::default()
-    }
-
     /// Compute magnitude of vector.
     pub(crate) fn len(&self) -> T {
         // use hypot() instead of sqrt() of sum of squares to avoid overflows
@@ -90,11 +86,9 @@ where
 
     /// Vector+Vector addition.
     fn add(self, rhs: Self) -> Self::Output {
-        let mut ret = [T::zero(); N]; //Self::Output::new();
-        for i in 0..N {
-            ret[i] = self[i] + rhs[i];
+        Self::Output {
+            inner: array_init(|i| self[i] + rhs[i]),
         }
-        Self::Output::from(ret)
     }
 }
 
@@ -106,11 +100,9 @@ where
 
     /// Vector-Vector subtraction.
     fn sub(self, rhs: Self) -> Self::Output {
-        let mut ret = [T::zero(); N]; //Self::Output::new();
-        for i in 0..N {
-            ret[i] = self[i] - rhs[i];
+        Self::Output {
+            inner: array_init(|i| self[i] - rhs[i]),
         }
-        Self::Output::from(ret)
     }
 }
 
@@ -122,11 +114,9 @@ where
 
     /// Vector*scalar multiplication.
     fn mul(self, rhs: T) -> Self::Output {
-        let mut ret = Self::Output::new();
-        for i in 0..N {
-            ret.inner[i] = self.inner[i] * rhs;
+        Self::Output {
+            inner: array_init(|i| self[i] * rhs),
         }
-        ret
     }
 }
 
@@ -138,11 +128,9 @@ where
 
     /// Vector/scalar division.
     fn div(self, rhs: T) -> Self::Output {
-        let mut ret = Self::Output::new();
-        for i in 0..N {
-            ret.inner[i] = self.inner[i] / rhs;
+        Self::Output {
+            inner: array_init(|i| self[i] / rhs),
         }
-        ret
     }
 }
 
@@ -235,7 +223,7 @@ mod tests {
     #[test]
     fn test_default_new() {
         let a = Vector::<f32, 3>::default();
-        let b = Vector::<f32, 3>::new();
+        let b = Vector::<f32, 3>::from([1.0; 3]) * 0.0;
         let c = Vector::<f32, 3>::from([0.0; 3]);
         assert_eq!(a, b);
         assert_eq!(b, c);

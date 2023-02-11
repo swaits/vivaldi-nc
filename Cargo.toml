@@ -36,6 +36,7 @@ name = "million-updates"
 harness = false
 
 [dependencies]
+array-init = "2.1.0"
 num-traits = "0.2.15"
 rand = "0.8.5"
 serde = {version = "1.0.152", features = ["serde_derive"]}

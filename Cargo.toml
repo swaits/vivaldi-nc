@@ -23,6 +23,10 @@ debug = true
 [profile.release]
 debug = true
 
+[[bench]]
+name = "million-updates"
+harness = false
+
 [dev-dependencies]
 assert_approx_eq = "1.1.0"
 criterion = "0.4.0"
@@ -36,10 +40,6 @@ cargo-husky = { version = "1.5.0", features = [
 ] }
 proptest = "1.0.0"
 serde_json = "1.0.91"
-
-[[bench]]
-name = "million-updates"
-harness = false
 
 [dependencies]
 array-init = "2.1.0"

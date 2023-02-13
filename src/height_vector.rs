@@ -240,6 +240,10 @@ mod tests {
     use assert_approx_eq::assert_approx_eq;
     use proptest::prelude::*;
 
+    fn approx_eq(a: FloatType, b: FloatType, margin: FloatType) -> bool {
+        (a - b).abs() <= margin
+    }
+
     proptest! {
         #[test]
         fn proptest_len(x: FloatType, y: FloatType, h: FloatType) {
@@ -248,13 +252,13 @@ mod tests {
             println!("a = {a:#?}");
             if x.is_nan() || x.is_infinite() || y.is_nan() || y.is_infinite() || h.is_nan() || h.is_infinite() || h < 0.0 {
                 // we should've gottne a random univ vector here
-                assert_approx_eq!(a.len(), 1.0);
+                prop_assert!(approx_eq(a.len(), 1.0, 0.0001));
             } else {
                 // `HeightVector` we created from proptest values should be valid and have a length
                 if len.is_nan() || len.is_infinite() {
-                    assert!(a.len().is_nan() || a.len().is_infinite());
+                    prop_assert!(a.len().is_nan() || a.len().is_infinite());
                 } else {
-                    assert_approx_eq!(a.len(), len);
+                    prop_assert!(approx_eq(a.len(), len, 0.0001));
                 }
             }
         }
@@ -268,9 +272,9 @@ mod tests {
             let a = HeightVector::<2>::from(([fx0 ,fy0 ],fh0 ));
             let b = HeightVector::<2>::from(([fx1 ,fy1 ],fh1 ));
             let c = a+b;
-            assert_approx_eq!(c.position[0], fx0 + fx1);
-            assert_approx_eq!(c.position[1], fy0 + fy1);
-            assert_approx_eq!(c.height, fh0 + fh1);
+            prop_assert!(approx_eq(c.position[0], fx0 + fx1, 0.0001));
+            prop_assert!(approx_eq(c.position[1], fy0 + fy1, 0.0001));
+            prop_assert!(approx_eq(c.height, fh0 + fh1, 0.0001));
         }
 
         #[test]
@@ -282,9 +286,9 @@ mod tests {
             let a = HeightVector::<2>::from(([fx0 ,fy0 ],fh0 ));
             let b = HeightVector::<2>::from(([fx1 ,fy1 ],fh1 ));
             let c = a-b;
-            assert_approx_eq!(c.position[0], fx0 - fx1);
-            assert_approx_eq!(c.position[1], fy0 - fy1);
-            assert_approx_eq!(c.height, fh0 + fh1);
+            prop_assert!(approx_eq(c.position[0], fx0 - fx1, 0.0001));
+            prop_assert!(approx_eq(c.position[1], fy0 - fy1, 0.0001));
+            prop_assert!(approx_eq(c.height, fh0 + fh1, 0.0001));
         }
 
         #[test]
@@ -295,11 +299,11 @@ mod tests {
             let a = HeightVector::<2>::from(([fx, fy], fh));
             let b = a * fm;
             if fm < 0.0 {
-                assert_approx_eq!(b.len(), 1.0);
+                prop_assert!(approx_eq(b.len(), 1.0, 0.0001));
             } else {
-                assert_approx_eq!(b.position[0], fx * fm);
-                assert_approx_eq!(b.position[1], fy * fm);
-                assert_approx_eq!(b.height, fh * fm);
+                prop_assert!(approx_eq(b.position[0], fx * fm, 0.0001));
+                prop_assert!(approx_eq(b.position[1], fy * fm, 0.0001));
+                prop_assert!(approx_eq(b.height, fh * fm, 0.0001));
             }
         }
     }

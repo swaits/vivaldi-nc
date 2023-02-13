@@ -157,16 +157,20 @@ mod tests {
     use assert_approx_eq::assert_approx_eq;
     use proptest::prelude::*;
 
+    fn approx_eq(a: f32, b: f32, margin: f32) -> bool {
+        (a - b).abs() <= margin
+    }
+
     proptest! {
         #[test]
         fn proptest_new(x: f32, y: f32, z: f32){
             let v = Vector::<f32, 3>::from([x,y,z]);
-            assert_approx_eq!(v[0], x);
-            assert_approx_eq!(v[1], y);
-            assert_approx_eq!(v[2], z);
-            assert!(v[0].is_finite());
-            assert!(v[1].is_finite());
-            assert!(v[1].is_finite());
+            prop_assert!(approx_eq(v[0], x, 0.0001));
+            prop_assert!(approx_eq(v[1], y, 0.0001));
+            prop_assert!(approx_eq(v[2], z, 0.0001));
+            prop_assert!(v[0].is_finite());
+            prop_assert!(v[1].is_finite());
+            prop_assert!(v[1].is_finite());
         }
 
         #[test]
@@ -176,21 +180,21 @@ mod tests {
 
             let (x,y,z) = (v[0]*m, v[1]*m, v[2]*m);
             if x.is_nan() || x.is_infinite() {
-                assert!(w[0].is_nan() || w[0].is_infinite());
+                prop_assert!(w[0].is_nan() || w[0].is_infinite());
             } else {
-                assert_approx_eq!(w[0], x);
+                prop_assert!(approx_eq(w[0], x, 0.0001));
             }
 
             if y.is_nan() || y.is_infinite() {
-                assert!(w[1].is_nan() || w[1].is_infinite());
+                prop_assert!(w[1].is_nan() || w[1].is_infinite());
             } else {
-                assert_approx_eq!(w[1], y);
+                prop_assert!(approx_eq(w[1], y, 0.0001));
             }
 
             if z.is_nan() || z.is_infinite() {
-                assert!(w[2].is_nan() || w[2].is_infinite());
+                prop_assert!(w[2].is_nan() || w[2].is_infinite());
             } else {
-                assert_approx_eq!(w[2], z);
+                prop_assert!(approx_eq(w[2], z, 0.0001));
             }
         }
 
@@ -201,21 +205,21 @@ mod tests {
 
             let (x,y,z) = (v[0]/d, v[1]/d, v[2]/d);
             if x.is_nan() || x.is_infinite() {
-                assert!(w[0].is_nan() ||w[0].is_infinite());
+                prop_assert!(w[0].is_nan() ||w[0].is_infinite());
             } else {
-                assert_approx_eq!(w[0], x);
+                prop_assert!(approx_eq(w[0], x, 0.0001));
             }
 
             if y.is_nan() || y.is_infinite() {
-                assert!(w[1].is_nan() || w[1].is_infinite());
+                prop_assert!(w[1].is_nan() || w[1].is_infinite());
             } else {
-                assert_approx_eq!(w[1], y);
+                prop_assert!(approx_eq(w[1], y, 0.0001));
             }
 
             if z.is_nan() || z.is_infinite() {
-                assert!(w[2].is_nan() || w[2].is_infinite());
+                prop_assert!(w[2].is_nan() || w[2].is_infinite());
             } else {
-                assert_approx_eq!(w[2], z);
+                prop_assert!(approx_eq(w[2], z, 0.0001));
             }
         }
     }

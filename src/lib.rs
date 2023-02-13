@@ -93,16 +93,33 @@
 //! ```
 //!
 
-#![deny(clippy::all)]
-#![deny(clippy::correctness)]
-#![deny(clippy::style)]
-#![deny(clippy::suspicious)]
-#![deny(clippy::complexity)]
-#![deny(clippy::perf)]
-#![deny(clippy::cargo)]
-#![deny(clippy::pedantic)]
-#![deny(clippy::nursery)]
-#![deny(clippy::unwrap_used)]
+#![deny(
+    clippy::all,
+    clippy::correctness,
+    clippy::style,
+    clippy::suspicious,
+    clippy::complexity,
+    clippy::perf,
+    clippy::cargo,
+    clippy::pedantic,
+    clippy::nursery,
+    clippy::unwrap_used
+)]
+#![deny(
+    anonymous_parameters,
+    missing_copy_implementations,
+    missing_debug_implementations,
+    missing_docs,
+    nonstandard_style,
+    rust_2018_idioms,
+    single_use_lifetimes,
+    trivial_casts,
+    trivial_numeric_casts,
+    // unreachable_pub, // disagrees with clippy::nurclippy::nursery as of 13-02-2023
+    unused_extern_crates,
+    unused_qualifications,
+    variant_size_differences
+)]
 #![allow(clippy::type_repetition_in_bounds)]
 
 mod height_vector;

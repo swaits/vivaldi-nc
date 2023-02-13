@@ -96,7 +96,7 @@ pub struct HeightVector<const N: usize> {
 impl<const N: usize> HeightVector<N> {
     /// A new height vector is a random unit vector
     pub(crate) fn random() -> Self {
-        let mut rng = rand::thread_rng();
+        let mut rng = thread_rng();
         let mut vec = [0.0; N];
         for i in vec.iter_mut().take(N) {
             *i = rng.gen::<FloatType>() - 0.5;

@@ -53,13 +53,15 @@ use crate::vector::{self, Vector};
 // **** Features ****
 //
 
-/// `FloatType` is a type alias for either `f32` or `f64` depending on cargo features
-#[cfg(feature = "f32")]
-type FloatType = f32;
-
-/// `FloatType` is a type alias for either `f32` or `f64` depending on cargo features
-#[cfg(not(feature = "f32"))]
-type FloatType = f64;
+cfg_if::cfg_if! {
+    if #[cfg(feature = "f32")] {
+        /// `FloatType` is a type alias for either `f32` or `f64` depending on cargo features
+        type FloatType = f32;
+    } else {
+        /// `FloatType` is a type alias for either `f32` or `f64` depending on cargo features
+        type FloatType = f64;
+    }
+}
 
 //
 // **** Constants ****
@@ -263,6 +265,7 @@ mod tests {
         }
 
         #[test]
+        #[allow(clippy::cast_lossless)]
         fn proptest_add(x0 in -1_000_000_000..1_000_000_000i32, y0 in -1_000_000_000..1_000_000_000i32, h0 in 0..1_000_000_000i32, x1 in -1_000_000_000..1_000_000_000i32, y1 in -1_000_000_000..1_000_000_000i32, h1 in 0..1_000_000i32) {
             // convert our integer range inputs to FloatType
             let (fx0,fy0,fh0) = (x0 as FloatType / 1_000.0, y0 as FloatType / 1_000.0, h0 as FloatType / 1_000.0);
@@ -277,6 +280,7 @@ mod tests {
         }
 
         #[test]
+        #[allow(clippy::cast_lossless)]
         fn proptest_sub(x0 in -1_000_000_000..1_000_000_000i32, y0 in -1_000_000_000..1_000_000_000i32, h0 in 0..1_000_000_000i32, x1 in -1_000_000_000..1_000_000_000i32, y1 in -1_000_000_000..1_000_000_000i32, h1 in 0..1_000_000i32) {
             // convert our integer range inputs to FloatType
             let (fx0,fy0,fh0) = (x0 as FloatType / 1_000.0, y0 as FloatType / 1_000.0, h0 as FloatType / 1_000.0);
@@ -291,6 +295,7 @@ mod tests {
         }
 
         #[test]
+        #[allow(clippy::cast_lossless)]
         fn proptest_mul(x in -1_000_000_000..1_000_000_000i32, y in -1_000_000_000..1_000_000_000i32, h in 0..1_000_000_000i32, m in -1_000_000_000..1_000_000_000i32) {
             // convert our integer range inputs to FloatType
             let (fx,fy,fh,fm) = (x as FloatType / 1_000.0, y as FloatType / 1_000.0, h as FloatType / 1_000.0, m as FloatType / 1_000.0);

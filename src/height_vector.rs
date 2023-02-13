@@ -249,7 +249,6 @@ mod tests {
         fn proptest_len(x: FloatType, y: FloatType, h: FloatType) {
             let len = x.hypot(y) + h.abs();
             let a = HeightVector::<2>::from(([x,y],h));
-            println!("a = {a:#?}");
             if x.is_nan() || x.is_infinite() || y.is_nan() || y.is_infinite() || h.is_nan() || h.is_infinite() || h < 0.0 {
                 // we should've gottne a random univ vector here
                 prop_assert!(approx_eq(a.len(), 1.0, 0.0001));

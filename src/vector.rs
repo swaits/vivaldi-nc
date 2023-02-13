@@ -8,7 +8,7 @@ use num_traits::Float;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 
-use std::ops::{Add, Div, Index, Mul, Sub};
+use core::ops::{Add, Div, Index, Mul, Sub};
 
 //
 // **** Structs ****

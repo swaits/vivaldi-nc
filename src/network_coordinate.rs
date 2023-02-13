@@ -352,7 +352,6 @@ mod tests {
 
         // compute and test the root mean squared error
         let error = slc.error + nyc.error + lax.error + mad.error;
-        println!("error = {error}");
         assert!(error < 5.0);
     }
 

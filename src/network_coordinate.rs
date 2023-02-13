@@ -2,7 +2,7 @@
 //!
 //! For usage explanation and examples, please see the main [`crate`] documentation.
 
-use std::time::Duration;
+use core::time::Duration;
 
 use serde::{Deserialize, Serialize};
 
@@ -146,7 +146,7 @@ impl<const N: usize> NetworkCoordinate<N> {
     /// # Example
     ///
     /// ```
-    /// use std::time::Duration;
+    /// use core::time::Duration;
     /// use vivaldi_nc::NetworkCoordinate;
     ///
     /// // We always have our own NC:

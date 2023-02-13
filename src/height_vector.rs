@@ -265,7 +265,7 @@ mod tests {
         }
 
         #[test]
-        #[allow(clippy::cast_lossless)]
+        #[allow(clippy::cast_lossless, clippy::cast_precision_loss)]
         fn proptest_add(x0 in -1_000_000_000..1_000_000_000i32, y0 in -1_000_000_000..1_000_000_000i32, h0 in 0..1_000_000_000i32, x1 in -1_000_000_000..1_000_000_000i32, y1 in -1_000_000_000..1_000_000_000i32, h1 in 0..1_000_000i32) {
             // convert our integer range inputs to FloatType
             let (fx0,fy0,fh0) = (x0 as FloatType / 1_000.0, y0 as FloatType / 1_000.0, h0 as FloatType / 1_000.0);
@@ -280,7 +280,7 @@ mod tests {
         }
 
         #[test]
-        #[allow(clippy::cast_lossless)]
+        #[allow(clippy::cast_lossless, clippy::cast_precision_loss)]
         fn proptest_sub(x0 in -1_000_000_000..1_000_000_000i32, y0 in -1_000_000_000..1_000_000_000i32, h0 in 0..1_000_000_000i32, x1 in -1_000_000_000..1_000_000_000i32, y1 in -1_000_000_000..1_000_000_000i32, h1 in 0..1_000_000i32) {
             // convert our integer range inputs to FloatType
             let (fx0,fy0,fh0) = (x0 as FloatType / 1_000.0, y0 as FloatType / 1_000.0, h0 as FloatType / 1_000.0);
@@ -295,7 +295,7 @@ mod tests {
         }
 
         #[test]
-        #[allow(clippy::cast_lossless)]
+        #[allow(clippy::cast_lossless, clippy::cast_precision_loss)]
         fn proptest_mul(x in -1_000_000_000..1_000_000_000i32, y in -1_000_000_000..1_000_000_000i32, h in 0..1_000_000_000i32, m in -1_000_000_000..1_000_000_000i32) {
             // convert our integer range inputs to FloatType
             let (fx,fy,fh,fm) = (x as FloatType / 1_000.0, y as FloatType / 1_000.0, h as FloatType / 1_000.0, m as FloatType / 1_000.0);

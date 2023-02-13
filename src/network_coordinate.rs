@@ -63,12 +63,14 @@ pub struct NetworkCoordinate<const N: usize> {
 ///
 /// This type alias is just for convenience. It's functionally equivalent to
 /// `NetworkCoordinate<2>`. For more information, see [`NetworkCoordinate`].
+#[allow(clippy::module_name_repetitions)]
 pub type NetworkCoordinate2D = NetworkCoordinate<2>;
 
 /// A 3D [`NetworkCoordinate`]. Includes a 3D Euclidean position and a height.
 ///
 /// This type alias is just for convenience. It's functionally equivalent to
 /// `NetworkCoordinate<3>`. For more information, see [`NetworkCoordinate`].
+#[allow(clippy::module_name_repetitions)]
 pub type NetworkCoordinate3D = NetworkCoordinate<3>;
 
 //

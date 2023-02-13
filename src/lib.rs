@@ -104,7 +104,6 @@
 #![deny(clippy::nursery)]
 #![deny(clippy::unwrap_used)]
 #![allow(clippy::type_repetition_in_bounds)]
-#![allow(clippy::module_name_repetitions)]
 
 mod height_vector;
 mod vector;

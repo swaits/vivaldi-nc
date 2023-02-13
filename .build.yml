@@ -1,7 +1,11 @@
 image: archlinux
 packages:
   - rustup
+  - cargo-audit
+  - cargo-deny
+  - cargo-outdated
   - cargo-tarpaulin
+  - cargo-udeps
 sources:
   - https://git.sr.ht/~swaits/vivaldi-nc
 artifacts:
@@ -19,6 +23,22 @@ tasks:
       rustup default stable
       cd vivaldi-nc/
       cargo clippy --verbose --all-targets --all-features
+  - outdated: |
+      rustup default stable
+      cd vivaldi-nc/
+      cargo outdated
+  - deny: |
+      rustup default stable
+      cd vivaldi-nc/
+      cargo deny check
+  - udeps: |
+      rustup default nightly
+      cd vivaldi-nc/
+      cargo +nightly udeps --all-features
+  - audit: |
+      rustup default stable
+      cd vivaldi-nc/
+      cargo audit
   - coverage: |
       rustup default stable
       cd vivaldi-nc/

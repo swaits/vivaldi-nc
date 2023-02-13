@@ -38,7 +38,7 @@ tasks:
   - audit: |
       rustup default stable
       cd vivaldi-nc/
-      cargo audit
+      cargo audit -d /tmp/advisory-db
   - coverage: |
       rustup default stable
       cd vivaldi-nc/

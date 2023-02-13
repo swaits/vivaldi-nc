@@ -192,6 +192,8 @@ This crate depends on:
   operations for the internal `Vector` so much nicer. Once we have
   `feature(array_zip)` stabilized, we could use that instead. Until then, this
   works well with zero performance impact.
+- [`cfg-if`](https://crates.io/crates/cfg-if): Compile-time only macro which
+  makes using `cfg` parameters much nicer in code.
 
 ## Design Goals & Alternatives
 

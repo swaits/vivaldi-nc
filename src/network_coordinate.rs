@@ -124,11 +124,13 @@ impl<const N: usize> NetworkCoordinate<N> {
     #[must_use]
     pub fn estimated_rtt(&self, rhs: &Self) -> Duration {
         // estimated rss is euclidean distance between the two plus the sum of the heights
-        #[cfg(feature = "f32")]
-        return Duration::from_secs_f32((self.heightvec - rhs.heightvec).len() / 1000.0);
-
-        #[cfg(not(feature = "f32"))]
-        return Duration::from_secs_f64((self.heightvec - rhs.heightvec).len() / 1000.0);
+        cfg_if::cfg_if! {
+            if #[cfg(feature = "f32")] {
+                Duration::from_secs_f32((self.heightvec - rhs.heightvec).len() / 1000.0)
+            } else {
+                Duration::from_secs_f64((self.heightvec - rhs.heightvec).len() / 1000.0)
+            }
+        }
     }
 
     /// Given another Vivaldi [`NetworkCoordinate`], adjust our coordinateto better represent the actual round
@@ -190,15 +192,15 @@ impl<const N: usize> NetworkCoordinate<N> {
     ///
     pub fn update(&mut self, rhs: &Self, rtt: Duration) -> &Self {
         // convert Durations into FloatType as fractional milliseconds for convenience
-        #[cfg(feature = "f32")]
-        let rtt_ms = rtt.as_secs_f32() * 1000.0;
-        #[cfg(feature = "f32")]
-        let rtt_estimated_ms = self.estimated_rtt(rhs).as_secs_f32() * 1000.0;
-
-        #[cfg(not(feature = "f32"))]
-        let rtt_ms = rtt.as_secs_f64() * 1000.0;
-        #[cfg(not(feature = "f32"))]
-        let rtt_estimated_ms = self.estimated_rtt(rhs).as_secs_f64() * 1000.0;
+        cfg_if::cfg_if! {
+            if #[cfg(feature = "f32")] {
+                let rtt_ms = rtt.as_secs_f32() * 1000.0;
+                let rtt_estimated_ms = self.estimated_rtt(rhs).as_secs_f32() * 1000.0;
+            } else {
+                let rtt_ms = rtt.as_secs_f64() * 1000.0;
+                let rtt_estimated_ms = self.estimated_rtt(rhs).as_secs_f64() * 1000.0;
+            }
+        }
 
         // rtt needs to be positive
         if rtt_ms < 0.0 {

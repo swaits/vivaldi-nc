@@ -14,11 +14,11 @@ tasks:
   - format: |
       rustup default stable
       cd vivaldi-nc/
-      cargo fmt --verbose --check
+      cargo fmt --verbose --check --all
   - lint: |
       rustup default stable
       cd vivaldi-nc/
-      cargo clippy --verbose
+      cargo clippy --verbose --all-targets --all-features
   - coverage: |
       rustup default stable
       cd vivaldi-nc/
@@ -26,18 +26,18 @@ tasks:
   - stable: |
       rustup default stable
       cd vivaldi-nc/
-      cargo build --verbose
+      cargo build --verbose --all-targets --all-features
       cargo test --verbose --all-features
   - nightly: |
       rustup default nightly
       cd vivaldi-nc/
-      cargo clippy --verbose ||:
-      cargo build --verbose  ||:
-      cargo test --verbose --all-features ||:
+      cargo clippy --verbose --all-targets --all-features ||:
+      cargo build --verbose --all-targets --all-features  ||:
+      cargo test --verbose --all-targets --all-features   ||:
   - bench: |
       rustup default stable
       cd vivaldi-nc/
-      cargo bench --verbose --all-features
+      cargo bench --verbose --all-targets --all-features
   - examples: |
       rustup default stable
       cd vivaldi-nc/

@@ -360,7 +360,8 @@ mod tests {
     fn test_serde() {
         // start with JSON, deserialize it
         let s = "{\"position\":[1.5,0.5,2.0],\"height\":0.1,\"error\":1.0}";
-        let a: NetworkCoordinate<3> = serde_json::from_str(s).unwrap();
+        let a: NetworkCoordinate<3> =
+            serde_json::from_str(s).expect("deserialization failed during test");
 
         // make sure it's the right length and works like we expect a normal NC
         assert_approx_eq!(a.heightvec.len(), 2.649_509, 0.001);
@@ -369,16 +370,18 @@ mod tests {
 
         // serialize it into a new JSON string and make sure it matches the original
         let t = serde_json::to_string(&a);
-        assert_eq!(t.as_ref().unwrap(), s);
+        assert_eq!(t.as_ref().expect("serialization failed during test"), s);
     }
 
     #[test]
     fn test_estimated_rtt() {
         // start with JSON, deserialize it
         let s = "{\"position\":[1.5,0.5,2.0],\"height\":25.0,\"error\":1.0}";
-        let a: NetworkCoordinate<3> = serde_json::from_str(s).unwrap();
+        let a: NetworkCoordinate<3> =
+            serde_json::from_str(s).expect("deserialization failed during test");
         let s = "{\"position\":[-1.5,-0.5,-2.0],\"height\":50.0,\"error\":1.0}";
-        let b: NetworkCoordinate<3> = serde_json::from_str(s).unwrap();
+        let b: NetworkCoordinate<3> =
+            serde_json::from_str(s).expect("deserialization failed during test");
 
         let estimate = a.estimated_rtt(&b);
         assert_approx_eq!(estimate.as_secs_f32(), 0.080_099);
@@ -387,7 +390,8 @@ mod tests {
     #[test]
     fn test_error_getter() {
         let s = "{\"position\":[1.5,0.5,2.0],\"height\":25.0,\"error\":1.0}";
-        let a: NetworkCoordinate<3> = serde_json::from_str(s).unwrap();
+        let a: NetworkCoordinate<3> =
+            serde_json::from_str(s).expect("deserialization failed during test");
         assert_approx_eq!(a.error(), 1.0);
     }
 }

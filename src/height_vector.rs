@@ -368,14 +368,15 @@ mod tests {
     fn test_serde() {
         // start with JSON, deserialize it
         let s = "{\"position\":[1.0,2.0,3.0],\"height\":4.0}";
-        let a: HeightVector<3> = serde_json::from_str(s).unwrap();
+        let a: HeightVector<3> =
+            serde_json::from_str(s).expect("deserialization failed during test");
 
         // make sure it's the right length and works like we expect a normal NC
         assert_approx_eq!(a.len(), 7.741_657, 0.001);
 
         // serialize it into a new JSON string and make sure it matches the original
         let t = serde_json::to_string(&a);
-        assert_eq!(t.as_ref().unwrap(), s);
+        assert_eq!(t.as_ref().expect("serialization failed during test"), s);
     }
 
     #[test]

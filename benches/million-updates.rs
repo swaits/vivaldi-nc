@@ -1,4 +1,4 @@
-use std::time::Duration;
+use core::time::Duration;
 
 use criterion::{criterion_group, criterion_main, Criterion};
 use vivaldi_nc::{NetworkCoordinate2D, NetworkCoordinate3D};

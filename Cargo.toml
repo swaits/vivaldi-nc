@@ -12,6 +12,7 @@ readme = "README.md"
 homepage = "https://sr.ht/~swaits/vivaldi-nc/"
 repository = "https://git.sr.ht/~swaits/vivaldi-nc"
 exclude = ["examples/*"]
+rust-version = "1.60"
 
 [features]
 default = []

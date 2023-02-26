@@ -3,6 +3,7 @@ packages:
   - rustup
   - cargo-audit
   - cargo-deny
+  - cargo-msrv
   - cargo-outdated
   - cargo-tarpaulin
   - cargo-udeps
@@ -39,6 +40,10 @@ tasks:
       rustup default stable
       cd vivaldi-nc/
       cargo audit -d /tmp/advisory-db
+  - msrv: |
+      rustup default stable
+      cd vivaldi-nc/
+      cargo msrv verify
   - coverage: |
       rustup default stable
       cd vivaldi-nc/

@@ -121,6 +121,7 @@
     variant_size_differences
 )]
 #![allow(clippy::type_repetition_in_bounds)]
+#![allow(single_use_lifetimes)]
 
 mod height_vector;
 mod vector;

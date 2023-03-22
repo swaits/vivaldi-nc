@@ -1,6 +1,6 @@
 [package]
 name = "vivaldi-nc"
-version = "0.6.4"
+version = "0.6.5"
 edition = "2021"
 authors = ["Stephen Waits <steve@waits.net>"]
 description = "Vivaldi network coordinates for fast, distributed latency estimates in multinode networks, with a clean and simple interface."
@@ -32,20 +32,20 @@ harness = false
 assert_approx_eq = "1.1.0"
 criterion = "0.4.0"
 cargo-husky = { version = "1.5.0", features = [
-	"run-for-all",
-	"precommit-hook",
-	"run-cargo-test",
-	"run-cargo-check",
-	"run-cargo-clippy",
-	"run-cargo-fmt",
+  "run-for-all",
+  "precommit-hook",
+  "run-cargo-test",
+  "run-cargo-check",
+  "run-cargo-clippy",
+  "run-cargo-fmt",
 ] }
 proptest = "1.1.0"
-serde_json = "1.0.93"
+serde_json = "1.0.94"
 
 [dependencies]
 array-init = "2.1.0"
 cfg-if = "1.0.0"
 num-traits = "0.2.15"
 rand = "0.8.5"
-serde = { version = "1.0.152", features = ["serde_derive"] }
-serde_with = "2.2.0"
+serde = { version = "1.0.158", features = ["serde_derive"] }
+serde_with = "2.3.1"

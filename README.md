@@ -1,6 +1,21 @@
 # vivaldi-nc - Vivaldi Network Coordinates
 
-[![docs.rs](https://img.shields.io/docsrs/vivaldi-nc)](https://docs.rs/vivaldi-nc/) [![builds.sr.ht status](https://builds.sr.ht/~swaits/vivaldi-nc.svg)](https://builds.sr.ht/~swaits/vivaldi-nc?) [![Crates.io](https://img.shields.io/crates/v/vivaldi-nc)](https://crates.io/crates/vivaldi-nc) ![Crates.io](https://img.shields.io/crates/d/vivaldi-nc) ![Crates.io](https://img.shields.io/crates/l/vivaldi-nc)
+![Rust Version](https://img.shields.io/badge/rustc-1.60+-blue.svg) [![docs.rs](https://img.shields.io/docsrs/vivaldi-nc)](https://docs.rs/vivaldi-nc/) [![builds.sr.ht status](https://builds.sr.ht/~swaits/vivaldi-nc.svg)](https://builds.sr.ht/~swaits/vivaldi-nc?) [![Crates.io](https://img.shields.io/crates/v/vivaldi-nc)](https://crates.io/crates/vivaldi-nc) ![Crates.io](https://img.shields.io/crates/d/vivaldi-nc) ![Crates.io](https://img.shields.io/crates/l/vivaldi-nc)
+
+<!--toc:start-->
+- [Introduction](#introduction)
+  - [Addressing the Drawbacks](#addressing-the-drawbacks)
+- [Usage](#usage)
+  - [Getting Started](#getting-started)
+  - [Cargo Features](#cargo-features)
+  - [Examples](#examples)
+- [Dependencies](#dependencies)
+- [Design Goals & Alternatives](#design-goals-alternatives)
+  - [Other Vivaldi NC Implementations](#other-vivaldi-nc-implementations)
+  - [Other NC Algorithms](#other-nc-algorithms)
+- [Getting Help or Contributing](#getting-help-or-contributing)
+- [License](#license)
+<!--toc:end-->
 
 ## Introduction
 

@@ -264,7 +264,12 @@ ticket](https://todo.sr.ht/~swaits/vivaldi-nc) or post on
 Discussion related to development or patch submissions should go to
 [`vivaldi-nc-devel@`](https://lists.sr.ht/~swaits/vivaldi-nc-devel).
 
-Patchsets should use [git-send-email](https://git-send-email.io/) or the [sr.ht
+If you want to contribute code enhancements, fixes directly, you should create
+a free account on [Sourcehut](https://sourcehut.org/), clone the repo, and then
+use the UI to send patchets over.
+
+Otherwise, you may send patchsets via
+[git-send-email](https://git-send-email.io/) or through the [sr.ht
 UI](https://git.sr.ht/~swaits/vivaldi-nc/send-email) (easiest IMO).
 
 Patch submitters implicitly agree that all contributions they submit fall under

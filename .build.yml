@@ -47,7 +47,7 @@ tasks:
   - coverage: |
       rustup default stable
       cd vivaldi-nc/
-      cargo tarpaulin --verbose --all-features --out Html
+      cargo tarpaulin --verbose --all-features --out html
   - stable: |
       rustup default stable
       cd vivaldi-nc/

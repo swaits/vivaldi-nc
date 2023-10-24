@@ -3,18 +3,19 @@
 ![Rust Version](https://img.shields.io/badge/rustc-1.60+-blue.svg) [![docs.rs](https://img.shields.io/docsrs/vivaldi-nc)](https://docs.rs/vivaldi-nc/) [![builds.sr.ht status](https://builds.sr.ht/~swaits/vivaldi-nc.svg)](https://builds.sr.ht/~swaits/vivaldi-nc?) [![Crates.io](https://img.shields.io/crates/v/vivaldi-nc)](https://crates.io/crates/vivaldi-nc) ![Crates.io](https://img.shields.io/crates/d/vivaldi-nc) ![Crates.io](https://img.shields.io/crates/l/vivaldi-nc)
 
 <!--toc:start-->
-- [Introduction](#introduction)
-  - [Addressing the Drawbacks](#addressing-the-drawbacks)
-- [Usage](#usage)
-  - [Getting Started](#getting-started)
-  - [Cargo Features](#cargo-features)
-  - [Examples](#examples)
-- [Dependencies](#dependencies)
-- [Design Goals & Alternatives](#design-goals-alternatives)
-  - [Other Vivaldi NC Implementations](#other-vivaldi-nc-implementations)
-  - [Other NC Algorithms](#other-nc-algorithms)
-- [Getting Help or Contributing](#getting-help-or-contributing)
-- [License](#license)
+- [vivaldi-nc - Vivaldi Network Coordinates](#vivaldi-nc-vivaldi-network-coordinates)
+  - [Introduction](#introduction)
+    - [Addressing the Drawbacks](#addressing-the-drawbacks)
+  - [Usage](#usage)
+    - [Getting Started](#getting-started)
+    - [Cargo Features](#cargo-features)
+    - [Examples](#examples)
+  - [Dependencies](#dependencies)
+  - [Design Goals & Alternatives](#design-goals-alternatives)
+    - [Other Vivaldi NC Implementations](#other-vivaldi-nc-implementations)
+    - [Other NC Algorithms](#other-nc-algorithms)
+  - [Getting Help or Contributing](#getting-help-or-contributing)
+  - [License](#license)
 <!--toc:end-->
 
 ## Introduction
@@ -37,20 +38,20 @@ According to the [Vivaldi coordinates article on Wikipedia](https://en.wikipedia
 > has a prime use in networking. The algorithm behind the system uses a
 > distributed technique to estimate propagation times between peers in the
 > network.
-> 
+>
 > Through this scheme, network topology awareness can be used to tune the
 > network behaviour to more efficiently distribute data. For example, in a
 > peer-to-peer network, more responsive identification and delivery of content
 > can be achieved. In the Azureus application, Vivaldi is used to improve the
-> performance of the distributed hash table that facilitates query matches. 
-> 
+> performance of the distributed hash table that facilitates query matches.
+>
 > **Advantages**
-> 
+>
 > - Vivaldi is a fully distributed scheme, which achieves good scalability.
 > - The Vivaldi algorithm is simple and easy to implement.
-> 
+>
 > **Drawbacks**
-> 
+>
 > - Vivaldi is based on the Euclidean distance model, which requires the
 >   predicted distances to obey the triangle inequality. However, there are
 >   many triangle inequality violations (TIVs) on the Internet.
@@ -278,19 +279,19 @@ the MIT license.
 ## License
 
 > MIT License
-> 
+>
 > Copyright (c) 2023 Stephen Waits
-> 
+>
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 > of this software and associated documentation files (the "Software"), to deal
 > in the Software without restriction, including without limitation the rights
 > to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 > copies of the Software, and to permit persons to whom the Software is
 > furnished to do so, subject to the following conditions:
-> 
+>
 > The above copyright notice and this permission notice shall be included in all
 > copies or substantial portions of the Software.
-> 
+>
 > THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 > IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 > FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

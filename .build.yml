@@ -4,6 +4,7 @@ packages:
   - cargo-audit
   - cargo-deny
   - cargo-msrv
+  - cargo-nextest
   - cargo-outdated
   - cargo-tarpaulin
   - cargo-udeps
@@ -52,13 +53,13 @@ tasks:
       rustup default stable
       cd vivaldi-nc/
       cargo build --verbose --all-targets --all-features
-      cargo test --verbose --all-features
+      cargo nextest run --verbose --all-targets --all-features
   - nightly: |
       rustup default nightly
       cd vivaldi-nc/
-      cargo clippy --verbose --all-targets --all-features ||:
-      cargo build --verbose --all-targets --all-features  ||:
-      cargo test --verbose --all-targets --all-features   ||:
+      cargo clippy --verbose --all-targets --all-features  ||:
+      cargo build --verbose --all-targets --all-features   ||:
+      cargo nextest --verbose --all-targets --all-features ||:
   - bench: |
       rustup default stable
       cd vivaldi-nc/

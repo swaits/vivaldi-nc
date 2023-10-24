@@ -236,6 +236,7 @@ impl<const N: usize> Mul<FloatType> for HeightVector<N> {
 //
 // **** Tests ****
 //
+#[allow(clippy::ignored_unit_patterns)]
 #[cfg(test)]
 mod tests {
     use super::*;

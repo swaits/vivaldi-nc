@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.6.11] - 2023-11-01
+## [0.6.12] - 2023-11-01
+
+### Miscellaneous Tasks
+
+- Update dependencies
+
+## [0.6.11]
 
 ### Miscellaneous Tasks
 

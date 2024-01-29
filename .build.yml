@@ -8,6 +8,8 @@ packages:
   - cargo-outdated
   - cargo-tarpaulin
   - cargo-udeps
+secrets:
+  - 88cce185-d2ec-4573-9546-e33f36f79bbf
 sources:
   - https://git.sr.ht/~swaits/vivaldi-nc
 artifacts:
@@ -73,3 +75,8 @@ tasks:
       cd vivaldi-nc/
       rustup run stable cargo doc --no-deps
       rustup run nightly cargo doc --no-deps ||:
+  - mirror-to-github: |
+      cd ~/vivaldi-nc
+      ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+      git remote add github git@github.com:swaits/vivaldi-nc.git
+      git push --mirror github

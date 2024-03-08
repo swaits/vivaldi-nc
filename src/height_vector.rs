@@ -47,7 +47,7 @@ use core::ops::{Add, Mul, Sub};
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::vector::{self, Vector};
+use crate::vector::Vector;
 
 //
 // **** Features ****
@@ -160,7 +160,7 @@ impl<const N: usize> Default for HeightVector<N> {
     /// Default value for a Vivaldi height vector is just the defaults of its children types.
     fn default() -> Self {
         Self {
-            position: vector::Vector::default(),
+            position: Vector::default(),
             height: Default::default(),
         }
     }
